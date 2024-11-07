@@ -38,3 +38,43 @@ model Usuarios {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 }
+
+model Banner {
+  id       Int    @id @default(autoincrement())
+  imgLink  String
+}
+
+model Redes {
+  id        Int    @id @default(autoincrement())
+  linkRedes String
+}
+
+model Mision {
+  id       Int    @id @default(autoincrement())
+  descripcion String
+  imgLink  String
+}
+
+model Beneficios {
+  id       Int    @id @default(autoincrement())
+  pregunta String
+  respuesta String
+}
+
+model Testimonios {
+  id         Int    @id @default(autoincrement())
+  nombre     String
+  testimonio String
+  imgLink    String
+}
+
+model About {
+  id          Int    @id @default(autoincrement())
+  descripcion String
+}
+
+model Secciones {
+  id       Int    @id @default(autoincrement())
+  descripcion String
+  imgLink  String
+}

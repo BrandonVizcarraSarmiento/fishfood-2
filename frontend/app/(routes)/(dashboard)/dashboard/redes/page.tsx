@@ -1,78 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ToastProvider } from "@/components/ui/toast"; // Asegúrate de tener este componente
+import { useState, useEffect } from "react";
+import { ToastProvider } from "@/components/ui/toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditRedSocial from "../../components/editRedSocialTab";
+import { editRedes } from "@/api/redes/editRedes";
+import { useGetRedes } from "@/api/redes/getRedes";
 
-type RedesData = {
-    whatsapp: string;
-    instagram: string;
-    facebook: string;
-};
+type PlatformType = "whatsapp" | "instagram" | "facebook";
 
 const EditRedes = () => {
-    const [data, setData] = useState<RedesData>({
+    const { redes, loading, error } = useGetRedes();
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const [data, setData] = useState({
         whatsapp: "",
         instagram: "",
         facebook: ""
     });
-    const [toastMessage, setToastMessage] = useState<string | null>(null); // Estado para el mensaje del toast
-    const [showToast, setShowToast] = useState(false); // Estado para controlar la visibilidad del toast
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch("/api/redes/get");
-                if (!res.ok) {
-                    throw new Error("Failed to fetch data");
-                }
-                const result: RedesData = await res.json();
-                setData(result);
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-                setToastMessage("Error al cargar los datos.");
-                setShowToast(true);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    const handleSubmit = async (platform: keyof RedesData) => {
-        try {
-            const res = await fetch("/api/redes/update", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    platform,
-                    url: data[platform],
-                }),
+        if (redes.length > 0) {
+            setData({
+                whatsapp: redes.find((r) => r.id === 1)?.linkRedes || "",
+                instagram: redes.find((r) => r.id === 2)?.linkRedes || "",
+                facebook: redes.find((r) => r.id === 3)?.linkRedes || ""
             });
-
-            if (!res.ok) {
-                throw new Error("Error al actualizar el enlace."); // Mensaje de error personalizado
-            }
-
-            setToastMessage("Enlace actualizado correctamente."); // Mensaje de éxito
-        } catch (error) {
-            console.error("Failed to update data:", error);
-            setToastMessage("Error al actualizar el enlace."); // Mensaje de error
         }
+    }, [redes]);
 
-        // Mostrar el toast
-        setShowToast(true);
+    const handleSubmit = async (platform: PlatformType) => {
+        const updatedLink = data[platform];
+        const platformData = redes.find((r) => r.id === { whatsapp: 1, instagram: 2, facebook: 3 }[platform]);
 
-        // Ocultar el toast después de unos segundos
-        setTimeout(() => {
-            setShowToast(false);
-        }, 3000); // El toast desaparecerá después de 3 segundos
+        if (platformData && platformData.linkRedes !== updatedLink) {
+            try {
+                await editRedes(platformData, { ...platformData, linkRedes: updatedLink });
+                setToastMessage("Enlace actualizado correctamente.");
+            } catch (error) {
+                console.error("Error al actualizar el enlace:", error);
+                setToastMessage("Error al actualizar el enlace.");
+            }
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+        }
     };
 
+    if (loading) return <p>Cargando redes sociales...</p>;
+    if (error) return <p>Error al cargar las redes sociales: {error}</p>;
+
     return (
-        <ToastProvider> {/* Proveedor de toast */}
+        <ToastProvider>
             <div className="p-4">
                 <h2 className="text-xl font-bold mb-4">Editar Redes Sociales</h2>
                 <Tabs>
@@ -87,7 +65,7 @@ const EditRedes = () => {
                             platform="whatsapp"
                             url={data.whatsapp}
                             handleChange={(value) => setData({ ...data, whatsapp: value })}
-                            handleSubmit={() => handleSubmit('whatsapp')}
+                            handleSubmit={() => handleSubmit("whatsapp")}
                         />
                     </TabsContent>
 
@@ -96,7 +74,7 @@ const EditRedes = () => {
                             platform="instagram"
                             url={data.instagram}
                             handleChange={(value) => setData({ ...data, instagram: value })}
-                            handleSubmit={() => handleSubmit('instagram')}
+                            handleSubmit={() => handleSubmit("instagram")}
                         />
                     </TabsContent>
 
@@ -105,13 +83,12 @@ const EditRedes = () => {
                             platform="facebook"
                             url={data.facebook}
                             handleChange={(value) => setData({ ...data, facebook: value })}
-                            handleSubmit={() => handleSubmit('facebook')}
+                            handleSubmit={() => handleSubmit("facebook")}
                         />
                     </TabsContent>
                 </Tabs>
             </div>
 
-            {/* Componente Toast */}
             {showToast && toastMessage && (
                 <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
                     {toastMessage}
