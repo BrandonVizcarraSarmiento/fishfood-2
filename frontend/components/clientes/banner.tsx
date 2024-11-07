@@ -1,29 +1,27 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useGetBanner } from "@/api/banner/getBanner";
 
 const Banner = () => {
+  const { banner, loading, error } = useGetBanner();
   const [bannerImage, setBannerImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchBannerImage = async () => {
-      try {
-        const res = await fetch("/api/banner/getBannerImage");
-        if (res.ok) {
-          const data = await res.json();
-          setBannerImage(data.image);
-        }
-      } catch (error) {
-        console.error("Error al obtener la imagen del banner:", error);
-        setBannerImage(null);
-      }
-    };
+    if (banner) {
+      setBannerImage(banner.imgLink); // Asignamos el enlace de la imagen del banner
+    }
+  }, [banner]);
 
-    fetchBannerImage();
-  }, []);
+  if (loading) {
+    return <div>Cargando imagen del banner...</div>; // Mensaje mientras se carga
+  }
+
+  if (error) {
+    return <div>{error}</div>; // Mostrar el error si ocurre
+  }
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center">
@@ -83,12 +81,12 @@ const Banner = () => {
 
       {bannerImage && (
         <div className="relative z-5">
-          <Image
+          <img
             src={bannerImage}
             alt="Banner"
+            className="mx-auto p-4"
             width={700}
             height={700}
-            className="mx-auto p-4"
           />
         </div>
       )}
@@ -102,9 +100,7 @@ const Banner = () => {
             Disfruta el sabor del mar en cada bocado
           </span>
           <Button>
-            <Link href="/productos">
-              Productos
-            </Link>
+            <Link href="/productos">Productos</Link>
           </Button>
         </div>
       )}

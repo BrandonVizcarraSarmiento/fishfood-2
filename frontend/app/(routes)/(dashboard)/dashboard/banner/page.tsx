@@ -1,103 +1,98 @@
 "use client";
 
-import { useState } from "react";
-import { ToastProvider } from "@/components/ui/toast"; // Asegúrate de tener este componente
-import { Button } from "@/components/ui/button"; // Botón reutilizable en tu proyecto
+import { useState, useEffect } from "react";
+import { ToastProvider } from "@/components/ui/toast";
+import { Button } from "@/components/ui/button";
+import { Banner } from "@/types/banner";
+import { useGetBanner } from "@/api/banner/getBanner";
+import { editBanner } from "@/api/banner/editBanner";
 
 const EditBanner = () => {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null); // Estado para el mensaje del toast
-  const [showToast, setShowToast] = useState(false); // Estado para controlar la visibilidad del toast
+  const { banner, loading, error } = useGetBanner();
+  const [imageLink, setImageLink] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      setSelectedFile(file);
+  // Actualiza el estado con el enlace de la imagen cuando el banner esté disponible
+  useEffect(() => {
+    if (banner) {
+      setImageLink(banner.imgLink); // Inicializa el campo con el enlace de la imagen
     }
+  }, [banner]);
+
+  // Función para manejar el cambio del enlace de la imagen
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageLink(e.target.value);
   };
 
-  const handleConfirmImage = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("type", selectedFile.type);
-
+  // Función para manejar el guardado del enlace actualizado
+  const handleSaveChanges = async () => {
+    if (imageLink && banner) {
       try {
-        const res = await fetch("/api/banner/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const updatedBanner: Banner = { ...banner, imgLink: imageLink }; // Prepara los datos actualizados
 
-        if (res.ok) {
-          const { filePath } = await res.json();
+        // Llama a la función de edición para actualizar el banner
+        const updatedBannerData = await editBanner(banner, updatedBanner);
 
-          await fetch("/api/banner/updateBannerImage", {
-            method: "POST",
-            body: JSON.stringify({ image: filePath }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          setToastMessage("Imagen actualizada con éxito");
-          setImagePreview(null);
-          setSelectedFile(null);
-        } else {
-          setToastMessage("Error al subir la imagen");
-        }
+        setToastMessage("Enlace de la imagen actualizado con éxito");
       } catch (error) {
-        console.error("Error al subir la imagen:", error);
-        setToastMessage("Error al subir la imagen");
+        console.error("Error al actualizar el enlace de la imagen:", error);
+        setToastMessage("Error al actualizar el enlace de la imagen");
       }
 
-      // Mostrar el toast
       setShowToast(true);
 
-      // Ocultar el toast después de unos segundos
       setTimeout(() => {
         setShowToast(false);
-      }, 3000); // El toast desaparecerá después de 3 segundos
+      }, 3000);
     }
   };
 
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
-    <ToastProvider> {/* Proveedor de toast */ }
+    <ToastProvider>
       <div className="flex flex-col items-center justify-center h-full p-6 bg-white rounded-lg shadow-md dark:bg-slate-800">
         <h1 className="text-3xl font-bold mb-6 dark:text-blue-500">Edita el Banner</h1>
-        <label className="mb-6">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-          <span className="inline-block px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow cursor-pointer hover:bg-blue-600 transition duration-300">
-            Seleccionar Archivo
+
+        {/* Campo de texto para ingresar el enlace de la imagen */}
+        <label className="mb-4 w-full">
+          <span className="block text-lg font-semibold mb-2 dark:text-blue-500">
+            Enlace de la imagen del banner:
           </span>
+          <input
+            type="text"
+            value={imageLink} // El valor se actualiza con el estado imageLink
+            onChange={handleLinkChange}
+            placeholder="Ingresa el enlace de la imagen"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
         </label>
 
-        {imagePreview && (
-          <div className="flex flex-col items-center justify-center mt-6">
-            <h2 className="text-xl font-semibold mb-4 dark:text-blue-500">Vista previa de la imagen seleccionada:</h2>
+        {/* Vista previa de la imagen cargada desde el enlace */}
+        {imageLink && (
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold mb-2 dark:text-blue-500">Vista previa de la imagen:</h2>
             <img
-              src={imagePreview}
+              src={imageLink}
               alt="Vista previa del banner"
               className="w-96 h-auto mb-6 rounded-lg shadow-md"
             />
-            <Button
-              onClick={handleConfirmImage}
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition duration-300"
-            >
-              Aceptar
-            </Button>
           </div>
         )}
+
+        <Button
+          onClick={handleSaveChanges} // Llama a la función para guardar cambios
+          className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition duration-300"
+        >
+          Guardar Cambios
+        </Button>
       </div>
 
       {/* Componente Toast */}
