@@ -3,58 +3,45 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditBeneficioTab from "../../components/editBeneficioTab";
-import { ToastProvider } from "@/components/ui/toast"; // Asegúrate de que este componente exista
-
-type Beneficio = {
-  pregunta: string;
-  respuesta: string;
-};
-
-type BeneficiosData = Beneficio[];
+import { ToastProvider } from "@/components/ui/toast";
+import { useGetBeneficios } from "@/api/beneficios/getBeneficios";
+import { editBeneficio } from "@/api/beneficios/editBenefecios";
+import { Beneficios } from "@/types/beneficios";
 
 const EditBeneficio = () => {
-  const [beneficios, setBeneficios] = useState<BeneficiosData>([]);
-  const [editedBeneficios, setEditedBeneficios] = useState<BeneficiosData>([]);
+  const { beneficios, loading, error } = useGetBeneficios();
+  const [editedBeneficios, setEditedBeneficios] = useState<Beneficios[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    const fetchBeneficios = async () => {
-      const res = await fetch("/api/beneficios/get");
-      const data = await res.json();
-      setBeneficios(data);
-      setEditedBeneficios(data);
-    };
-
-    fetchBeneficios();
-  }, []);
-
-  const handleSubmit = async () => {
-    const res = await fetch("/api/beneficios/update", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ beneficios: editedBeneficios }),
-    });
-    if (res.ok) {
-      setToastMessage("Datos guardados correctamente");
-    } else {
-      setToastMessage("Error al guardar los datos");
+    if (beneficios.length > 0) {
+      setEditedBeneficios(beneficios);
     }
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000); // El toast desaparecerá después de 3 segundos
+  }, [beneficios]);
+
+  const handleChange = (index: number, field: keyof Beneficios, value: string) => {
+    const updatedBeneficios = [...editedBeneficios];
+    updatedBeneficios[index] = { ...updatedBeneficios[index], [field]: value };
+    setEditedBeneficios(updatedBeneficios);
   };
 
-  const handleChange = (index: number, field: keyof Beneficio, value: string) => {
-    setEditedBeneficios(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
+  const handleSubmit = async (index: number) => {
+    try {
+      const updatedBeneficio = editedBeneficios[index];
+      await editBeneficio(updatedBeneficio.id, updatedBeneficio);
+      setToastMessage(`Beneficio ${index + 1} actualizado con éxito`);
+    } catch (error) {
+      console.error(error);
+      setToastMessage(`Error al actualizar el beneficio ${index + 1}`);
+    }
+
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
+
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <ToastProvider>
@@ -62,40 +49,23 @@ const EditBeneficio = () => {
         <h2 className="text-xl font-bold mb-4">Editar Beneficios</h2>
         <Tabs>
           <TabsList>
-            <TabsTrigger value="beneficio-0">Beneficio 1</TabsTrigger>
-            <TabsTrigger value="beneficio-1">Beneficio 2</TabsTrigger>
-            <TabsTrigger value="beneficio-2">Beneficio 3</TabsTrigger>
-            {/* Agrega más según la cantidad de beneficios que tengas */}
+            {editedBeneficios.map((_, index) => (
+              <TabsTrigger key={index} value={`beneficio-${index}`}>
+                Beneficio {index + 1}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          <TabsContent value="beneficio-0">
-            <EditBeneficioTab
-              index={0}
-              beneficio={editedBeneficios[0]}
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-            />
-          </TabsContent>
-
-          <TabsContent value="beneficio-1">
-            <EditBeneficioTab
-              index={1}
-              beneficio={editedBeneficios[1]}
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-            />
-          </TabsContent>
-
-          <TabsContent value="beneficio-2">
-            <EditBeneficioTab
-              index={2}
-              beneficio={editedBeneficios[2]}
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-            />
-          </TabsContent>
-
-          {/* Agrega más TabsContent según la cantidad de beneficios que tengas */}
+          {editedBeneficios.map((beneficio, index) => (
+            <TabsContent key={index} value={`beneficio-${index}`}>
+              <EditBeneficioTab
+                index={index}
+                beneficio={beneficio}
+                handleChange={handleChange}
+                handleSubmit={() => handleSubmit(index)}
+              />
+            </TabsContent>
+          ))}
         </Tabs>
 
         {/* Componente Toast */}
@@ -110,4 +80,3 @@ const EditBeneficio = () => {
 };
 
 export default EditBeneficio;
-  

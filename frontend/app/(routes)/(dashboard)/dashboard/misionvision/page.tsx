@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditSection from "../../components/EditSection";
-import { ToastProvider } from "@/components/ui/toast"; // Asegúrate de que este componente exista
+import { ToastProvider } from "@/components/ui/toast";
+import { editMision } from "@/api/mision/editMision";
+import { Mision } from "@/types/mision";
+import { useGetMision } from "@/api/mision/getMision";
 
 type SectionData = {
   texto: string;
   imagen: string;
+  id: number; // Añadimos el ID
 };
 
 type MisionVisionData = {
@@ -17,91 +21,52 @@ type MisionVisionData = {
 };
 
 const EditMisionVision = () => {
+  const { misiones, loading, error } = useGetMision(); // Obtenemos las misiones desde la API
   const [data, setData] = useState<MisionVisionData>({
-    mision: { texto: "", imagen: "" },
-    vision: { texto: "", imagen: "" },
-    valores: { texto: "", imagen: "" },
+    mision: { texto: "", imagen: "", id: 0 },
+    vision: { texto: "", imagen: "", id: 0 },
+    valores: { texto: "", imagen: "", id: 0 },
   });
-
-  const [previewImages, setPreviewImages] = useState<{ [key: string]: string }>({
-    mision: "",
-    vision: "",
-    valores: "",
-  });
-
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/misionvision/get");
-      const result = await res.json();
-      setData(result);
-      setPreviewImages({
-        mision: result.mision.imagen,
-        vision: result.vision.imagen,
-        valores: result.valores.imagen,
+    if (!loading && misiones.length > 0) {
+      setData({
+        mision: { texto: misiones[0].descripcion, imagen: misiones[0].imgLink, id: misiones[0].id },
+        vision: { texto: misiones[1].descripcion, imagen: misiones[1].imgLink, id: misiones[1].id },
+        valores: { texto: misiones[2].descripcion, imagen: misiones[2].imgLink, id: misiones[2].id },
       });
-    };
-
-    fetchData();
-  }, []);
-
-  const handleSubmit = async (section: keyof MisionVisionData) => {
-    const res = await fetch("/api/misionvision/update", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        section,
-        texto: data[section].texto,
-        imagen: data[section].imagen,
-      }),
-    });
-    if (res.ok) {
-      setToastMessage("Datos guardados correctamente");
-    } else {
-      setToastMessage("Error al guardar los datos");
     }
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000); // El toast desaparecerá después de 3 segundos
+  }, [misiones, loading]);
+
+  const handleTextChange = (section: "mision" | "vision" | "valores", value: string) => {
+    setData({ ...data, [section]: { ...data[section], texto: value } });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, section: keyof MisionVisionData) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const formData = new FormData();
-      formData.append("file", e.target.files[0]);
-      formData.append("type", section);
-      const res = await fetch("/api/misionvision/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await res.json();
-      if (result.success) {
-        setData((prev) => ({
-          ...prev,
-          [section]: { ...prev[section], imagen: result.filePath },
-        }));
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewImages((prev) => ({
-            ...prev,
-            [section]: reader.result as string,
-          }));
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setToastMessage("Error al subir la imagen");
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 3000);
-      }
+  const handleImageLinkChange = (section: "mision" | "vision" | "valores", value: string) => {
+    setData({ ...data, [section]: { ...data[section], imagen: value } });
+  };
+
+  const handleSubmit = async (section: "mision" | "vision" | "valores") => {
+    const updatedSection = data[section];
+    try {
+      const updatedMision: Mision = {
+        id: updatedSection.id,  // Usamos el ID de la sección
+        descripcion: updatedSection.texto,
+        imgLink: updatedSection.imagen,
+      };
+
+      // Llamamos a la API para actualizar la sección específica
+      const result = await editMision(updatedMision);
+      setToastMessage(`Sección ${section} actualizada con éxito`);
+    } catch (error) {
+      console.error(error);
+      setToastMessage(`Error al actualizar la sección ${section}`);
     }
+
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
@@ -119,11 +84,8 @@ const EditMisionVision = () => {
             <EditSection
               sectionName="Misión"
               sectionData={data.mision}
-              previewImage={previewImages.mision}
-              handleTextChange={(value) =>
-                setData({ ...data, mision: { ...data.mision, texto: value } })
-              }
-              handleFileUpload={(e) => handleFileUpload(e, "mision")}
+              handleTextChange={(value) => handleTextChange("mision", value)}
+              handleImageLinkChange={(value) => handleImageLinkChange("mision", value)}
               handleSubmit={() => handleSubmit("mision")}
             />
           </TabsContent>
@@ -132,11 +94,8 @@ const EditMisionVision = () => {
             <EditSection
               sectionName="Visión"
               sectionData={data.vision}
-              previewImage={previewImages.vision}
-              handleTextChange={(value) =>
-                setData({ ...data, vision: { ...data.vision, texto: value } })
-              }
-              handleFileUpload={(e) => handleFileUpload(e, "vision")}
+              handleTextChange={(value) => handleTextChange("vision", value)}
+              handleImageLinkChange={(value) => handleImageLinkChange("vision", value)}
               handleSubmit={() => handleSubmit("vision")}
             />
           </TabsContent>
@@ -145,11 +104,8 @@ const EditMisionVision = () => {
             <EditSection
               sectionName="Valores"
               sectionData={data.valores}
-              previewImage={previewImages.valores}
-              handleTextChange={(value) =>
-                setData({ ...data, valores: { ...data.valores, texto: value } })
-              }
-              handleFileUpload={(e) => handleFileUpload(e, "valores")}
+              handleTextChange={(value) => handleTextChange("valores", value)}
+              handleImageLinkChange={(value) => handleImageLinkChange("valores", value)}
               handleSubmit={() => handleSubmit("valores")}
             />
           </TabsContent>
