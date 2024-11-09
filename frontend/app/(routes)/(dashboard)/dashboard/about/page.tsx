@@ -5,117 +5,77 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditAboutTab from "../../components/editAboutTab";
 import EditSection from "../../components/EditSection";
 import { ToastProvider } from "@/components/ui/toast";
+import { About } from "@/types/about"; // Asegúrate de importar los tipos
+import { secciones } from "@/types/secciones";
 
 const EditAbout = () => {
-  const [aboutData, setAboutData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [aboutData, setAboutData] = useState<About | null>(null);
+  const [seccionesData, setSeccionesData] = useState<secciones[]>([]);
   const [showToast, setShowToast] = useState(false);
-  const [files, setFiles] = useState<{ [key: string]: File | null }>({
-    seccion1: null,
-    seccion2: null,
-  });
-  const [previewImages, setPreviewImages] = useState<{ [key: string]: string }>({
-    seccion1: "",
-    seccion2: "",
-  });
+  const [toastMessage, setToastMessage] = useState("");
 
+  // Cargar los datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/about/get");
-        const data = await res.json();
-        setAboutData(data);
-        setPreviewImages({
-          seccion1: data.seccion1.imagen,
-          seccion2: data.seccion2.imagen,
-        });
-      } catch (err) {
-        setError("Error al cargar la información");
+        const aboutResponse = await fetch("/api/about");
+        const about = await aboutResponse.json();
+        setAboutData(about);
+
+        const seccionesResponse = await fetch("/api/secciones");
+        const secciones = await seccionesResponse.json();
+        setSeccionesData(secciones);
+      } catch (error) {
+        setToastMessage("Error al cargar los datos.");
+        setShowToast(true);
       }
     };
+
     fetchData();
   }, []);
 
-  const handleTextChange = async (section: string, texto: string, imagen?: string) => {
-    try {
-      const res = await fetch("/api/about/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          section,
-          texto,
-          imagen,
-        }),
-      });
+  // Manejar cambios de texto (About y Secciones)
+  const handleTextChange = (field: keyof About | keyof Secciones, value: string) => {
+    if (field === "descripcion" && aboutData) {
+      setAboutData({ ...aboutData, descripcion: value });
+    } else if (field === "descripcion" && seccionesData) {
+      const updatedSecciones = seccionesData.map((section) => 
+        section.id === field ? { ...section, descripcion: value } : section
+      );
+      setSeccionesData(updatedSecciones);
+    }
+  };
 
-      if (!res.ok) {
-        throw new Error("Error al actualizar la sección");
+  // Manejar la actualización de About y Secciones
+  const handleSubmit = async (type: "quienesSomos" | "seccion1" | "seccion2") => {
+    try {
+      let response;
+      if (type === "quienesSomos" && aboutData) {
+        response = await fetch(`/api/about/${aboutData.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(aboutData),
+        });
+      } else {
+        const section = seccionesData.find((s) => s.id === type);
+        if (section) {
+          response = await fetch(`/api/secciones/${section.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(section),
+          });
+        }
       }
-      setToastMessage(`Se ha actualizado correctamente la sección ${section}`);
+      if (!response.ok) {
+        throw new Error("Error al guardar los cambios.");
+      }
+      setToastMessage("Cambios guardados con éxito.");
       setShowToast(true);
-
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    } catch (err) {
-      console.error(err);
-      setError("Error al actualizar");
+    } catch (error) {
+      setToastMessage("Error al guardar los cambios.");
+      setShowToast(true);
     }
   };
-
-  const handleImageUpload = async (section: string) => {
-    const file = files[section];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", section);
-
-    try {
-      const res = await fetch("/api/about/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error("Error al subir la imagen");
-      }
-
-      const response = await res.json();
-      return response.filePath;
-    } catch (err) {
-      console.error(err);
-      setError("Error al subir la imagen");
-      return null;
-    }
-  };
-
-  const handleUpdate = async (section: string) => {
-    const imagePath = await handleImageUpload(section);
-    await handleTextChange(section, aboutData[section].texto, imagePath);
-    setFiles({ ...files, [section]: null });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, section: string) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      setFiles({ ...files, [section]: file });
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImages((prev) => ({
-          ...prev,
-          [section]: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  if (error) return <p>{error}</p>;
 
   return (
     <ToastProvider>
@@ -128,31 +88,37 @@ const EditAbout = () => {
             <TabsTrigger value="seccion2">Sección 2</TabsTrigger>
           </TabsList>
           <TabsContent value="quienesSomos">
-            <EditAboutTab
-              aboutData={aboutData}
-              handleTextChange={(texto) => setAboutData({ ...aboutData, quienesSomos: { ...aboutData.quienesSomos, texto } })}
-              handleSubmit={() => handleUpdate("quienesSomos")}
-            />
+            {aboutData && (
+              <EditAboutTab
+                aboutData={aboutData}
+                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
+                handleSubmit={() => handleSubmit("quienesSomos")}
+              />
+            )}
           </TabsContent>
           <TabsContent value="seccion1">
-            <EditSection
-              sectionName="Sección 1"
-              sectionData={aboutData?.seccion1}
-              previewImage={previewImages.seccion1}
-              handleTextChange={(texto) => setAboutData({ ...aboutData, seccion1: { ...aboutData.seccion1, texto } })}
-              handleFileUpload={(e) => handleFileChange(e, "seccion1")}
-              handleSubmit={() => handleUpdate("seccion1")}
-            />
+            {seccionesData.length > 0 && (
+              <EditSection
+                sectionName="Sección 1"
+                sectionData={seccionesData[0]}
+                previewImage={seccionesData[0].imglink}
+                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
+                handleImageLinkChange={(url) => handleTextChange("imglink", url)}
+                handleSubmit={() => handleSubmit("seccion1")}
+              />
+            )}
           </TabsContent>
           <TabsContent value="seccion2">
-            <EditSection
-              sectionName="Sección 2"
-              sectionData={aboutData?.seccion2}
-              previewImage={previewImages.seccion2}
-              handleTextChange={(texto) => setAboutData({ ...aboutData, seccion2: { ...aboutData.seccion2, texto } })}
-              handleFileUpload={(e) => handleFileChange(e, "seccion2")}
-              handleSubmit={() => handleUpdate("seccion2")}
-            />
+            {seccionesData.length > 1 && (
+              <EditSection
+                sectionName="Sección 2"
+                sectionData={seccionesData[1]}
+                previewImage={seccionesData[1].imglink}
+                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
+                handleImageLinkChange={(url) => handleTextChange("imglink", url)}
+                handleSubmit={() => handleSubmit("seccion2")}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 type EditAboutTabProps = {
-  aboutData: any;
+  aboutData: { descripcion: string };
   handleTextChange: (value: string) => void;
   handleSubmit: () => void;
 };
@@ -21,7 +21,7 @@ const EditAboutTab = ({ aboutData, handleTextChange, handleSubmit }: EditAboutTa
           <textarea
             className="w-full p-2 border border-gray-300 rounded resize-none"
             rows={4}
-            value={aboutData?.quienesSomos.texto}
+            value={aboutData.descripcion}
             onChange={(e) => handleTextChange(e.target.value)}
           />
         </div>
