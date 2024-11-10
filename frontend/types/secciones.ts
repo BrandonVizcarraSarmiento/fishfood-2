@@ -1,5 +1,5 @@
-export interface secciones {
+export interface Seccion {
     id: number;
     descripcion: string;
-    imglink: string;
+    imgLink: string;
 }

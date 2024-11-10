@@ -1,6 +1,6 @@
-import { secciones } from "@/types/secciones";
+import { Seccion } from "@/types/secciones";
 
-export async function editSeccion(updatedSeccion: secciones) {
+export async function editSeccion(updatedSeccion: Seccion) {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/secciones/${updatedSeccion.id}`;
 
     try {

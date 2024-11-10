@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { secciones } from "@/types/secciones";
+import { Seccion } from "@/types/secciones";
 
 export function useGetSecciones() {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/api/secciones`;
-  const [seccionesData, setSeccionesData] = useState<secciones[]>([]);
+  const [seccionesData, setSeccionesData] = useState<Seccion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ export function useGetSecciones() {
         if (!response.ok) {
           throw new Error("Error al obtener las secciones");
         }
-        const data: secciones[] = await response.json();
+        const data: Seccion[] = await response.json();
         setSeccionesData(data);
       } catch (err) {
         if (err instanceof Error) {

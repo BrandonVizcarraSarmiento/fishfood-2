@@ -1,79 +1,64 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EditAboutTab from "../../components/editAboutTab";
-import EditSection from "../../components/EditSection";
 import { ToastProvider } from "@/components/ui/toast";
-import { About } from "@/types/about"; // Asegúrate de importar los tipos
-import { secciones } from "@/types/secciones";
+import EditAboutTab from "../../components/editAboutTab";
+import EditSecciones from "../../components/editSecciones";
+import { useGetAbout } from "@/api/about/getAbout";
+import { useGetSecciones } from "@/api/secciones/getSecciones";
+import { editAbout } from "@/api/about/editAbout";
+import { editSeccion } from "@/api/secciones/editSecciones";
+import { About } from "@/types/about";
 
 const EditAbout = () => {
-  const [aboutData, setAboutData] = useState<About | null>(null);
-  const [seccionesData, setSeccionesData] = useState<secciones[]>([]);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const { about: initialAbout, loading: loadingAbout, error: errorAbout } = useGetAbout();
+  const { seccionesData: initialSeccionesData, loading: loadingSecciones, error: errorSecciones } = useGetSecciones();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Cargar los datos iniciales
+  // Estado local para mantener `about` con tipo `About`
+  const [about, setAbout] = useState<About>(initialAbout || { id: 0, descripcion: "" });
+  const [seccionesData, setSeccionesData] = useState(initialSeccionesData || []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const aboutResponse = await fetch("/api/about");
-        const about = await aboutResponse.json();
-        setAboutData(about);
-
-        const seccionesResponse = await fetch("/api/secciones");
-        const secciones = await seccionesResponse.json();
-        setSeccionesData(secciones);
-      } catch (error) {
-        setToastMessage("Error al cargar los datos.");
-        setShowToast(true);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Manejar cambios de texto (About y Secciones)
-  const handleTextChange = (field: keyof About | keyof Secciones, value: string) => {
-    if (field === "descripcion" && aboutData) {
-      setAboutData({ ...aboutData, descripcion: value });
-    } else if (field === "descripcion" && seccionesData) {
-      const updatedSecciones = seccionesData.map((section) => 
-        section.id === field ? { ...section, descripcion: value } : section
-      );
-      setSeccionesData(updatedSecciones);
+    if (initialAbout) {
+      setAbout(initialAbout);
     }
+  }, [initialAbout]);
+
+  useEffect(() => {
+    setSeccionesData(initialSeccionesData || []);
+  }, [initialSeccionesData]);
+
+  // Maneja cambios de texto en `about`
+  const handleAboutTextChange = (value: string) => {
+    setAbout((prevAbout) => ({ ...prevAbout, descripcion: value }));
   };
 
-  // Manejar la actualización de About y Secciones
-  const handleSubmit = async (type: "quienesSomos" | "seccion1" | "seccion2") => {
+  // Maneja cambios de texto y actualiza el estado de `seccionesData`
+  const handleSeccionTextChange = (index: number, field: string, value: string) => {
+    setSeccionesData((prevSecciones) => {
+      const updatedSecciones = [...prevSecciones];
+      updatedSecciones[index] = { ...updatedSecciones[index], [field]: value };
+      return updatedSecciones;
+    });
+  };
+
+  const handleSubmit = async (type: string) => {
     try {
-      let response;
-      if (type === "quienesSomos" && aboutData) {
-        response = await fetch(`/api/about/${aboutData.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(aboutData),
-        });
-      } else {
-        const section = seccionesData.find((s) => s.id === type);
-        if (section) {
-          response = await fetch(`/api/secciones/${section.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(section),
-          });
+      if (type === "quienesSomos" && about) {
+        await editAbout(about);
+        setToastMessage("¡Quienes Somos actualizados correctamente!");
+      } else if (type.startsWith("seccion")) {
+        const index = parseInt(type.split("_")[1], 10) - 1;
+        const seccion = seccionesData[index];
+        if (seccion) {
+          await editSeccion(seccion);
+          setToastMessage(`¡${seccion.descripcion} actualizada correctamente!`);
         }
       }
-      if (!response.ok) {
-        throw new Error("Error al guardar los cambios.");
-      }
-      setToastMessage("Cambios guardados con éxito.");
-      setShowToast(true);
     } catch (error) {
-      setToastMessage("Error al guardar los cambios.");
-      setShowToast(true);
+      setToastMessage("Error al actualizar, por favor intenta nuevamente.");
     }
   };
 
@@ -81,53 +66,57 @@ const EditAbout = () => {
     <ToastProvider>
       <div className="p-4">
         <h2 className="text-xl font-bold mb-4">Editar Quienes Somos</h2>
-        <Tabs>
-          <TabsList>
-            <TabsTrigger value="quienesSomos">Quienes Somos</TabsTrigger>
-            <TabsTrigger value="seccion1">Sección 1</TabsTrigger>
-            <TabsTrigger value="seccion2">Sección 2</TabsTrigger>
-          </TabsList>
-          <TabsContent value="quienesSomos">
-            {aboutData && (
-              <EditAboutTab
-                aboutData={aboutData}
-                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
-                handleSubmit={() => handleSubmit("quienesSomos")}
-              />
-            )}
-          </TabsContent>
-          <TabsContent value="seccion1">
-            {seccionesData.length > 0 && (
-              <EditSection
-                sectionName="Sección 1"
-                sectionData={seccionesData[0]}
-                previewImage={seccionesData[0].imglink}
-                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
-                handleImageLinkChange={(url) => handleTextChange("imglink", url)}
-                handleSubmit={() => handleSubmit("seccion1")}
-              />
-            )}
-          </TabsContent>
-          <TabsContent value="seccion2">
-            {seccionesData.length > 1 && (
-              <EditSection
-                sectionName="Sección 2"
-                sectionData={seccionesData[1]}
-                previewImage={seccionesData[1].imglink}
-                handleTextChange={(texto) => handleTextChange("descripcion", texto)}
-                handleImageLinkChange={(url) => handleTextChange("imglink", url)}
-                handleSubmit={() => handleSubmit("seccion2")}
-              />
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
 
-      {showToast && toastMessage && (
-        <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
-          {toastMessage}
-        </div>
-      )}
+        {loadingAbout || loadingSecciones ? (
+          <div>Cargando...</div>
+        ) : (
+          <Tabs>
+            <TabsList>
+              <TabsTrigger value="quienesSomos">Quienes Somos</TabsTrigger>
+              <TabsTrigger value="seccion1">Sección 1</TabsTrigger>
+              <TabsTrigger value="seccion2">Sección 2</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="quienesSomos">
+              {about && (
+                <EditAboutTab
+                  aboutData={about}
+                  handleTextChange={handleAboutTextChange}
+                  handleSubmit={() => handleSubmit("quienesSomos")}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="seccion1">
+              {seccionesData.length > 0 && (
+                <EditSecciones
+                  sectionName="Sección 1"
+                  sectionData={seccionesData[0]}
+                  handleTextChange={(field, texto) => handleSeccionTextChange(0, field, texto)}
+                  handleSubmit={() => handleSubmit("seccion_1")}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="seccion2">
+              {seccionesData.length > 1 && (
+                <EditSecciones
+                  sectionName="Sección 2"
+                  sectionData={seccionesData[1]}
+                  handleTextChange={(field, texto) => handleSeccionTextChange(1, field, texto)}
+                  handleSubmit={() => handleSubmit("seccion_2")}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {toastMessage && (
+          <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
+            {toastMessage}
+          </div>
+        )}
+      </div>
     </ToastProvider>
   );
 };
