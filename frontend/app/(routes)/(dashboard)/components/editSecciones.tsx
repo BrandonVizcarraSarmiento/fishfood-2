@@ -18,6 +18,7 @@ const EditSecciones = ({
   const [descripcion, setDescripcion] = useState(sectionData.descripcion);
   const [imgLink, setImgLink] = useState(sectionData.imgLink);
 
+  // UseEffect para actualizar el estado local cuando cambia `sectionData`
   useEffect(() => {
     setDescripcion(sectionData.descripcion);
     setImgLink(sectionData.imgLink);
@@ -39,8 +40,9 @@ const EditSecciones = ({
             rows={4}
             value={descripcion}
             onChange={(e) => {
-              setDescripcion(e.target.value);
-              handleTextChange("descripcion", e.target.value);
+              const newDescripcion = e.target.value;
+              setDescripcion(newDescripcion); // Actualiza el estado local
+              handleTextChange("descripcion", newDescripcion); // Llama a la función de cambio de texto
             }}
           />
         </div>
@@ -51,8 +53,9 @@ const EditSecciones = ({
             type="text"
             value={imgLink}
             onChange={(e) => {
-              setImgLink(e.target.value);
-              handleTextChange("imglink", e.target.value);
+              const newImgLink = e.target.value;
+              setImgLink(newImgLink); // Actualiza el estado local
+              handleTextChange("imgLink", newImgLink); // Llama a la función de cambio de imagen
             }}
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="URL de la imagen"

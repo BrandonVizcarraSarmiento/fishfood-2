@@ -1,23 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAboutDto } from './dto/create-about.dto';
 import { UpdateAboutDto } from './dto/update-about.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AboutService {
+
+  constructor(private prismaService: PrismaService) { }
+
   create(createAboutDto: CreateAboutDto) {
-    return 'This action adds a new about';
+    return this.prismaService.about.create({ data: createAboutDto })
   }
 
   findAll() {
-    return `This action returns all about`;
+    return this.prismaService.about.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} about`;
+  async findOne(id: number) {
+    const aboutEncontrado = await this.prismaService.about.findUnique({ where: { id: id } });
+
+    if (!aboutEncontrado) {
+      throw new NotFoundException(`About ${id} no encontrado`);
+    }
+
+    return aboutEncontrado;
   }
 
-  update(id: number, updateAboutDto: UpdateAboutDto) {
-    return `This action updates a #${id} about`;
+  async update(id: number, updateAboutDto: UpdateAboutDto) {
+    const aboutActulizado = await this.prismaService.about.update({ where: { id }, data: updateAboutDto });
+
+    if (!aboutActulizado) {
+      throw new NotFoundException(`About ${id} no encontrado`);
+    }
+
+    return aboutActulizado;
   }
 
   remove(id: number) {

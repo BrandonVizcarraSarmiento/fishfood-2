@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { About } from "@/types/about";
 
 export function useGetAbout() {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/about`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/about/1`;
   const [about, setAbout] = useState<About | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
