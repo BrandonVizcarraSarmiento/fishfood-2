@@ -16,7 +16,6 @@ const EditAbout = () => {
   const { seccionesData: initialSeccionesData, loading: loadingSecciones, error: errorSecciones } = useGetSecciones();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Estado local para mantener `about` con tipo `About`
   const [about, setAbout] = useState<About>(initialAbout || { id: 0, descripcion: "" });
   const [seccionesData, setSeccionesData] = useState(initialSeccionesData || []);
 
@@ -30,12 +29,10 @@ const EditAbout = () => {
     setSeccionesData(initialSeccionesData || []);
   }, [initialSeccionesData]);
 
-  // Maneja cambios de texto en `about`
   const handleAboutTextChange = (value: string) => {
     setAbout((prevAbout) => ({ ...prevAbout, descripcion: value }));
   };
 
-  // Maneja cambios de texto y actualiza el estado de `seccionesData`
   const handleSeccionTextChange = (index: number, field: string, value: string) => {
     setSeccionesData((prevSecciones) => {
       const updatedSecciones = [...prevSecciones];
@@ -54,7 +51,7 @@ const EditAbout = () => {
         const seccion = seccionesData[index];
         if (seccion) {
           await editSeccion(seccion);
-          setToastMessage(`¡${seccion.descripcion} actualizada correctamente!`);
+          setToastMessage(`¡Seccion actualizada correctamente!`);
         }
       }
     } catch (error) {
