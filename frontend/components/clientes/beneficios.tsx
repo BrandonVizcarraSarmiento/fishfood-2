@@ -1,5 +1,6 @@
-"use client"
-import { useState, useEffect } from 'react';
+"use client";
+
+import { useGetBeneficios } from "@/api/beneficios/getBeneficios";
 import {
   Accordion,
   AccordionContent,
@@ -8,24 +9,18 @@ import {
 } from "@/components/ui/accordion";
 
 const Beneficios = () => {
-  const [beneficios, setBeneficios] = useState<any>(null);
+  const { beneficios, loading, error } = useGetBeneficios();
 
-  useEffect(() => {
-    const fetchBeneficios = async () => {
-      const response = await fetch('/api/beneficios/get');
-      const data = await response.json();
-      setBeneficios(data);
-    };
-    fetchBeneficios();
-  }, []);
+  if (loading) return <p>Cargando beneficios...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col items-center my-20 p-4">
       <h2 className="text-center font-bold text-3xl">Beneficios</h2>
       <div className="w-full max-w-6xl">
         <Accordion type="single" collapsible>
-          {beneficios && beneficios.map((beneficio: any, index: number) => (
-            <AccordionItem key={index} value={`item-${index}`}>
+          {beneficios.map((beneficio, index) => (
+            <AccordionItem key={beneficio.id} value={`item-${index}`}>
               <AccordionTrigger>{beneficio.pregunta}</AccordionTrigger>
               <AccordionContent className="text-left">
                 {beneficio.respuesta}

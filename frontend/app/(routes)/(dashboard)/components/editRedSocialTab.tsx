@@ -20,7 +20,7 @@ const EditRedSocial = ({ platform, url, handleChange, handleSubmit }: EditRedSoc
                 <div>
                     <label className="block font-semibold mb-2">Enlace de {platform.charAt(0).toUpperCase() + platform.slice(1)}</label>
                     <input
-                        className="w-full p-2 border border-gray-300 rounded"
+                        className="w-full p-2 border border-gray-600 rounded"
                         type="text"
                         value={url}
                         onChange={(e) => handleChange(e.target.value)}

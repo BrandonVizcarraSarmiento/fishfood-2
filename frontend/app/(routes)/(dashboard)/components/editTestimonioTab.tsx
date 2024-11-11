@@ -31,7 +31,7 @@ const EditSectionTestimonio = ({
           <label className="block font-semibold mb-2">Nombre</label>
           <input
             type="text"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-600 rounded"
             value={sectionData.nombre}
             onChange={(e) => handleTextChange("nombre", e.target.value)}
           />
@@ -39,7 +39,7 @@ const EditSectionTestimonio = ({
         <div>
           <label className="block font-semibold mb-2">Testimonio</label>
           <textarea
-            className="w-full p-2 border border-gray-300 rounded resize-none"
+            className="w-full p-2 border border-gray-600 rounded resize-none"
             rows={4}
             value={sectionData.testimonio}
             onChange={(e) => handleTextChange("testimonio", e.target.value)}
@@ -49,7 +49,7 @@ const EditSectionTestimonio = ({
           <label className="block font-semibold mb-2">Avatar (URL de imagen)</label>
           <input
             type="text"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-600  rounded"
             value={sectionData.imgLink}
             onChange={handleImageLinkChange}
             placeholder="Ingresa la URL de la imagen"
@@ -58,7 +58,7 @@ const EditSectionTestimonio = ({
             <img
               src={previewImage}
               alt={sectionName}
-              className="w-64 h-64 object-cover mt-2 rounded-md border border-gray-300"
+              className="w-64 h-64 object-cover mt-2 rounded-md border border-gray-600 "
             />
           )}
         </div>

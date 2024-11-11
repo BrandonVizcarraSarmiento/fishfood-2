@@ -1,40 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-type Testimonio = {
-  id: number;
-  nombre: string;
-  testimonio: string;
-  avatar: string;
-};
+import { useGetTestimonios } from "@/api/testimonio/getTestimonio";
 
 const Testimonios = () => {
-  const [testimonios, setTestimonios] = useState<Testimonio[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { testimonios, loading, error } = useGetTestimonios();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("/api/testimonios/get");
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
-        setTestimonios(data);
-      } catch (error) {
-        setError("Error al cargar los testimonios");
-        console.error("Fetch error:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <p>Cargando testimonios...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <section className="flex flex-col items-center my-20 p-4">
@@ -44,7 +18,7 @@ const Testimonios = () => {
           <div key={testimonio.id}>
             <Alert className="flex items-start bg-slate-200 p-4 rounded-lg mb-4 dark:text-white dark:bg-transparent dark:hover:bg-slate-950">
               <Avatar className="mr-4">
-                <AvatarImage src={testimonio.avatar} alt={testimonio.nombre} />
+                <AvatarImage src={testimonio.imgLink} alt={testimonio.nombre} />
                 <AvatarFallback>{testimonio.nombre.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>

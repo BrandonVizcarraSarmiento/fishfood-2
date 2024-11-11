@@ -62,23 +62,24 @@ const EditBanner = () => {
         <h1 className="text-3xl font-bold mb-6 dark:text-blue-500">Edita el Banner</h1>
 
         {/* Campo de texto para ingresar el enlace de la imagen */}
-        <label className="mb-4 w-full">
+        <label className="mb-2 w-full text-center">
           <span className="block text-lg font-semibold mb-2 dark:text-blue-500">
-            Enlace de la imagen del banner:
+            Enlace de la imagen del banner
           </span>
           <input
             type="text"
-            value={imageLink} // El valor se actualiza con el estado imageLink
+            value={imageLink}
             onChange={handleLinkChange}
             placeholder="Ingresa el enlace de la imagen"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-600 rounded w-1/2 max-w-2xl mx-auto"
           />
         </label>
+
 
         {/* Vista previa de la imagen cargada desde el enlace */}
         {imageLink && (
           <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2 dark:text-blue-500">Vista previa de la imagen:</h2>
+            <h2 className="text-xl text-center font-semibold mb-2 dark:text-blue-500">Vista previa de la imagen</h2>
             <img
               src={imageLink}
               alt="Vista previa del banner"
@@ -88,7 +89,7 @@ const EditBanner = () => {
         )}
 
         <Button
-          onClick={handleSaveChanges} // Llama a la función para guardar cambios
+          onClick={handleSaveChanges}
           className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition duration-300"
         >
           Guardar Cambios

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Mision } from "@/types/mision";
 
 export function useGetMision() {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/mision`; // Cambié la URL para que obtengas todas las misiones
-  const [misiones, setMisiones] = useState<Mision[]>([]); // Ahora es un array de misiones
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/mision`;
+  const [misiones, setMisiones] = useState<Mision[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 

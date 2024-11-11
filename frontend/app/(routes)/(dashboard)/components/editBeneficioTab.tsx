@@ -26,7 +26,7 @@ const EditBeneficioTab = ({
           <label className="block font-semibold mb-2">Pregunta</label>
           <input
             type="text"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-600  rounded"
             value={beneficio.pregunta || ""}
             onChange={(e) => handleChange(index, "pregunta", e.target.value)}
           />
@@ -34,7 +34,7 @@ const EditBeneficioTab = ({
         <div>
           <label className="block font-semibold mb-2">Respuesta</label>
           <textarea
-            className="w-full p-2 border border-gray-300 rounded resize-none"
+            className="w-full p-2 border border-gray-600 rounded resize-none"
             rows={4}
             value={beneficio.respuesta || ""}
             onChange={(e) => handleChange(index, "respuesta", e.target.value)}

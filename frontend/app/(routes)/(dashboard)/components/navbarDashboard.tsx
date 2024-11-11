@@ -30,9 +30,6 @@ const NavbarDashboard = () => {
                     <Link href="/dashboard/about" className="flex items-center p-2 hover:bg-gray-500 rounded">
                         Sobre Nosotros
                     </Link>
-                    <Link href="/dashboard/galeria" className="flex items-center p-2 hover:bg-gray-500 rounded">
-                        Galeria
-                    </Link>
                     <Link href="/dashboard/productos" className="flex items-center p-2 hover:bg-gray-500 rounded">
                         Productos
                     </Link>

@@ -21,7 +21,7 @@ const EditAboutTab = ({ aboutData, handleTextChange, handleSubmit }: EditAboutTa
         <div>
           <label className="block font-semibold mb-2">Texto de Quienes Somos</label>
           <textarea
-            className="w-full p-2 border border-gray-300 rounded resize-none"
+            className="w-full p-2 border border-gray-600 rounded resize-none"
             rows={4}
             value={aboutData.descripcion}
             onChange={(e) => handleTextChange(e.target.value)}

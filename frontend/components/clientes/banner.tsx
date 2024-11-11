@@ -16,11 +16,11 @@ const Banner = () => {
   }, [banner]);
 
   if (loading) {
-    return <div>Cargando imagen del banner...</div>; // Mensaje mientras se carga
+    return <div>Cargando imagen del banner...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>; // Mostrar el error si ocurre
+    return <div>{error}</div>;
   }
 
   return (

@@ -18,7 +18,6 @@ const EditSecciones = ({
   const [descripcion, setDescripcion] = useState(sectionData.descripcion);
   const [imgLink, setImgLink] = useState(sectionData.imgLink);
 
-  // UseEffect para actualizar el estado local cuando cambia `sectionData`
   useEffect(() => {
     setDescripcion(sectionData.descripcion);
     setImgLink(sectionData.imgLink);
@@ -36,13 +35,13 @@ const EditSecciones = ({
         <div>
           <label className="block font-semibold mb-2">Texto de {sectionName}</label>
           <textarea
-            className="w-full p-2 border border-gray-300 rounded resize-none"
+            className="w-full p-2 border border-gray-600 rounded resize-none"
             rows={4}
             value={descripcion}
             onChange={(e) => {
               const newDescripcion = e.target.value;
-              setDescripcion(newDescripcion); // Actualiza el estado local
-              handleTextChange("descripcion", newDescripcion); // Llama a la función de cambio de texto
+              setDescripcion(newDescripcion);
+              handleTextChange("descripcion", newDescripcion);
             }}
           />
         </div>
@@ -54,10 +53,10 @@ const EditSecciones = ({
             value={imgLink}
             onChange={(e) => {
               const newImgLink = e.target.value;
-              setImgLink(newImgLink); // Actualiza el estado local
-              handleTextChange("imgLink", newImgLink); // Llama a la función de cambio de imagen
+              setImgLink(newImgLink);
+              handleTextChange("imgLink", newImgLink);
             }}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-600 rounded"
             placeholder="URL de la imagen"
           />
         </div>
