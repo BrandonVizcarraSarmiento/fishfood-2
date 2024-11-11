@@ -25,6 +25,7 @@ const EditAboutTab = ({ aboutData, handleTextChange, handleSubmit }: EditAboutTa
             rows={4}
             value={aboutData.descripcion}
             onChange={(e) => handleTextChange(e.target.value)}
+            required
           />
         </div>
         <Button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">

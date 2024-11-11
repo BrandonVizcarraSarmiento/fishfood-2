@@ -24,6 +24,7 @@ const EditRedSocial = ({ platform, url, handleChange, handleSubmit }: EditRedSoc
                         type="text"
                         value={url}
                         onChange={(e) => handleChange(e.target.value)}
+                        required
                     />
                 </div>
                 <Button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">Guardar Cambios</Button>

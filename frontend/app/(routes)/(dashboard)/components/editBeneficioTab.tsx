@@ -29,6 +29,7 @@ const EditBeneficioTab = ({
             className="w-full p-2 border border-gray-600  rounded"
             value={beneficio.pregunta || ""}
             onChange={(e) => handleChange(index, "pregunta", e.target.value)}
+            required
           />
         </div>
         <div>
@@ -38,6 +39,7 @@ const EditBeneficioTab = ({
             rows={4}
             value={beneficio.respuesta || ""}
             onChange={(e) => handleChange(index, "respuesta", e.target.value)}
+            required
           />
         </div>
         <Button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">

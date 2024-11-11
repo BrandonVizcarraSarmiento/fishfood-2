@@ -31,6 +31,7 @@ const EditSection = ({
             rows={4}
             value={sectionData.texto}
             onChange={(e) => handleTextChange(e.target.value)}
+            required
           />
         </div>
         <div>
@@ -41,6 +42,7 @@ const EditSection = ({
             onChange={(e) => handleImageLinkChange(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="URL de la imagen"
+            required
           />
         </div>
 

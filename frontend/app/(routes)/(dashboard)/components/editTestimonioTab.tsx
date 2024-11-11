@@ -34,6 +34,7 @@ const EditSectionTestimonio = ({
             className="w-full p-2 border border-gray-600 rounded"
             value={sectionData.nombre}
             onChange={(e) => handleTextChange("nombre", e.target.value)}
+            required
           />
         </div>
         <div>
@@ -43,6 +44,7 @@ const EditSectionTestimonio = ({
             rows={4}
             value={sectionData.testimonio}
             onChange={(e) => handleTextChange("testimonio", e.target.value)}
+            required
           />
         </div>
         <div>
@@ -53,6 +55,7 @@ const EditSectionTestimonio = ({
             value={sectionData.imgLink}
             onChange={handleImageLinkChange}
             placeholder="Ingresa la URL de la imagen"
+            required
           />
           {previewImage && (
             <img

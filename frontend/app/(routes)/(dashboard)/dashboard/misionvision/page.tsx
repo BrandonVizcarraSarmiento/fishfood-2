@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EditSection from "../../components/EditSection";
+import EditSection from "../../components/editSection";
 import { ToastProvider } from "@/components/ui/toast";
 import { editMision } from "@/api/mision/editMision";
 import { Mision } from "@/types/mision";
@@ -11,7 +11,7 @@ import { useGetMision } from "@/api/mision/getMision";
 type SectionData = {
   texto: string;
   imagen: string;
-  id: number; // Añadimos el ID
+  id: number;
 };
 
 type MisionVisionData = {
@@ -21,7 +21,7 @@ type MisionVisionData = {
 };
 
 const EditMisionVision = () => {
-  const { misiones, loading, error } = useGetMision(); // Obtenemos las misiones desde la API
+  const { misiones, loading, error } = useGetMision();
   const [data, setData] = useState<MisionVisionData>({
     mision: { texto: "", imagen: "", id: 0 },
     vision: { texto: "", imagen: "", id: 0 },
@@ -52,7 +52,7 @@ const EditMisionVision = () => {
     const updatedSection = data[section];
     try {
       const updatedMision: Mision = {
-        id: updatedSection.id,  // Usamos el ID de la sección
+        id: updatedSection.id,
         descripcion: updatedSection.texto,
         imgLink: updatedSection.imagen,
       };

@@ -43,6 +43,7 @@ const EditSecciones = ({
               setDescripcion(newDescripcion);
               handleTextChange("descripcion", newDescripcion);
             }}
+            required
           />
         </div>
 
@@ -58,6 +59,7 @@ const EditSecciones = ({
             }}
             className="w-full p-2 border border-gray-600 rounded"
             placeholder="URL de la imagen"
+            required
           />
         </div>
 
