@@ -27,7 +27,7 @@ const EditSection = ({
         <div>
           <label className="block font-semibold mb-2">Texto de {sectionName}</label>
           <textarea
-            className="w-full p-2 border border-gray-300 rounded resize-none"
+            className="w-full p-2 border border-gray-600 rounded resize-none"
             rows={4}
             value={sectionData.texto}
             onChange={(e) => handleTextChange(e.target.value)}
@@ -40,7 +40,7 @@ const EditSection = ({
             type="text"
             value={sectionData.imagen}
             onChange={(e) => handleImageLinkChange(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-600 rounded"
             placeholder="URL de la imagen"
             required
           />
