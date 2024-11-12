@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EditSection from "../../components/editSection";
+import EditSection from "../../components/editMision";
 import { ToastProvider } from "@/components/ui/toast";
 import { editMision } from "@/api/mision/editMision";
 import { Mision } from "@/types/mision";
