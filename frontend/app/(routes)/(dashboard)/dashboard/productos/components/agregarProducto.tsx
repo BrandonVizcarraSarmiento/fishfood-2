@@ -30,7 +30,7 @@ const AgregarProducto = ({
     const [formData, setFormData] = useState({
         nombre: "",
         descripcion: "",
-        precio: 0,
+        precio: "",
         imagen: "",
         destacado: false,
     });
@@ -45,7 +45,7 @@ const AgregarProducto = ({
         const { name, value, type } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === "number" ? parseFloat(value) : value,
+            [name]: type === "number" ? value : value,
         }));
     };
 
@@ -59,14 +59,13 @@ const AgregarProducto = ({
     const handleSave = async () => {
         const { nombre, descripcion, precio, imagen, destacado } = formData;
 
-        if (!nombre || !descripcion || precio <= 0 || !imagen) {
-            setError("Todos los campos son obligatorios y el precio debe ser mayor a 0.");
+        if (!nombre || !descripcion || !precio || !imagen) {
+            setError("Todos los campos son obligatorios.");
             return;
         }
 
         const destacadosActuales = productos.filter(p => p.destacado);
         if (destacado && destacadosActuales.length >= 3) {
-            // Editar el producto más antiguo para quitarlo de destacados
             const productoAEditar = destacadosActuales[0];
             const updatedProducto = { ...productoAEditar, destacado: false };
             await editProducto(productoAEditar, updatedProducto);
@@ -76,7 +75,7 @@ const AgregarProducto = ({
             id: getNextId(),
             nombre,
             descripcion,
-            precio,
+            precio: parseFloat(precio),
             imagen,
             destacado,
             createdAt: new Date().toISOString(),
@@ -99,7 +98,7 @@ const AgregarProducto = ({
         setFormData({
             nombre: "",
             descripcion: "",
-            precio: 0,
+            precio: "",
             imagen: "",
             destacado: false,
         });

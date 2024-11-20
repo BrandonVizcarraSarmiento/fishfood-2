@@ -1,4 +1,5 @@
 import { useGetRedes } from "@/api/redes/getRedes";
+import InfoProductoSkeleton from "@/components/skeleton/infoProductoSkeleton";
 import { Separator } from "@/components/ui/separator";
 
 interface InfoProductoProps {
@@ -12,7 +13,7 @@ const InfoProducto: React.FC<InfoProductoProps> = ({ nombre, precio, descripcion
 
     const enlaceRedSocial = redes.find((red) => red.id === 1)?.linkRedes;
 
-    if (loading) return <p>Cargando redes sociales...</p>;
+    if (loading) return <InfoProductoSkeleton />;
     if (error) return <p>Error: {error}</p>;
 
     return (

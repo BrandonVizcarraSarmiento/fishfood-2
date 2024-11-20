@@ -7,11 +7,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import BeneficiosSkeleton from "../skeleton/beneficiosSkeleton";
 
 const Beneficios = () => {
   const { beneficios, loading, error } = useGetBeneficios();
 
-  if (loading) return <p>Cargando beneficios...</p>;
+  if (loading) {
+    return <BeneficiosSkeleton />;
+  }
+
   if (error) return <p>Error: {error}</p>;
 
   return (

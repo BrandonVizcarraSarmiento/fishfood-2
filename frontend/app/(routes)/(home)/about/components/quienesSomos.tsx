@@ -1,11 +1,12 @@
 "use client";
 
 import { useGetAbout } from "@/api/about/getAbout";
+import AboutSkeleton from "@/components/skeleton/aboutSkeleton";
 
 const QuienesSomos = () => {
   const { about, loading, error } = useGetAbout();
 
-  if (loading) return <p>Cargando información...</p>;
+  if (loading) return <AboutSkeleton />;
   if (error) return <p>Error: {error}</p>;
 
   return (

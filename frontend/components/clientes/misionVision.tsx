@@ -3,11 +3,12 @@
 import { useGetMision } from "@/api/mision/getMision";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Mision } from "@/types/mision";
+import MisionVisionSkeleton from "../skeleton/misionVisionSkeleton";
 
 const MisionVision = () => {
     const { misiones, loading, error } = useGetMision();
 
-    if (loading) return <p>Cargando...</p>;
+    if (loading) return <MisionVisionSkeleton />;
     if (error) return <p>Error: {error}</p>;
 
     return (

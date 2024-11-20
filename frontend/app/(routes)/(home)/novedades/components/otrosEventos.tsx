@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Novedad } from "@/types/novedad"; // Importamos la interfaz
+import { Novedad } from "@/types/novedad";
 import { formatearFecha } from "@/types/fecha";
 
 interface OtrosEventosProps {
@@ -10,7 +10,7 @@ interface OtrosEventosProps {
 // Función para limitar el texto a un máximo de 50 letras
 const limitarTexto = (texto: string, limiteLetras: number) => {
   if (texto.length > limiteLetras) {
-    return texto.slice(0, limiteLetras) + "..."; // Mostrar solo los primeros 50 caracteres
+    return texto.slice(0, limiteLetras) + "...";
   }
   return texto;
 };

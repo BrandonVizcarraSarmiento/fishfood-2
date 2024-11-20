@@ -8,6 +8,7 @@ import ImgProducto from '../components/imgProducto';
 import InfoProducto from '../components/infoProducto';
 import { getProductoById } from '@/api/productos/getProductoById';
 import { Producto } from "@/types/producto";
+import ImgProductoSkeleton from '@/components/skeleton/imgProductoSkeleton';
 
 const PageInfoProductos = () => {
     const { id } = useParams();
@@ -30,7 +31,7 @@ const PageInfoProductos = () => {
     }, [id]);
 
     if (!producto) {
-        return <div>Cargando...</div>;
+        return <ImgProductoSkeleton/>;
     }
 
     return (

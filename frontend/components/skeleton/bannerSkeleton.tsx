@@ -1,29 +1,6 @@
-"use client";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { useState, useEffect } from "react";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import { useGetBanner } from "@/api/banner/getBanner";
-import BannerSkeleton from "../skeleton/bannerSkeleton";
-
-const Banner = () => {
-  const { banner, loading, error } = useGetBanner();
-  const [bannerImage, setBannerImage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (banner) {
-      setBannerImage(banner.imgLink); // Asignamos el enlace de la imagen del banner
-    }
-  }, [banner]);
-
-  if (loading) {
-    return <BannerSkeleton />;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
+const BannerSkeleton = () => {
   return (
     <div className="relative w-full h-screen flex items-center justify-center">
       {/* SVG difuminado detrás de la imagen del banner */}
@@ -80,33 +57,17 @@ const Banner = () => {
         </defs>
       </svg>
 
-      {bannerImage && (
-        <div className="relative z-5">
-          <img
-            src={bannerImage}
-            alt="Banner"
-            className="mx-auto p-4"
-            width={700}
-            height={700}
-          />
-        </div>
-      )}
+      {/* Imagen del banner simulada */}
+      <Skeleton className="w-[700px] h-[700px] rounded-lg mx-auto p-4" />
 
-      {bannerImage && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-2">
-          <h1 className="mt-8 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-medium leading-none text-primary">
-            FishFood
-          </h1>
-          <span className="text-lg md:text-xl mb-4 font-light text-white">
-            Disfruta el sabor del mar en cada bocado
-          </span>
-          <Button>
-            <Link href="/productos">Productos</Link>
-          </Button>
-        </div>
-      )}
+      {/* Texto y botón simulados */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-2 space-y-4">
+        <Skeleton className="h-12 w-1/2 rounded-lg" /> {/* Título */}
+        <Skeleton className="h-6 w-1/3 rounded-lg" /> {/* Subtítulo */}
+        <Skeleton className="h-10 w-32 rounded-md" /> {/* Botón */}
+      </div>
     </div>
   );
 };
 
-export default Banner;
+export default BannerSkeleton;

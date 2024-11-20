@@ -1,12 +1,13 @@
 "use client";
 
 import { useGetSecciones } from "@/api/secciones/getSecciones";
+import InfoAboutSkeleton from "@/components/skeleton/infoAboutSkeleton";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 const Info = () => {
   const { seccionesData, loading, error } = useGetSecciones();
 
-  if (loading) return <p>Cargando secciones...</p>;
+  if (loading) return <InfoAboutSkeleton />;
   if (error) return <p>Error: {error}</p>;
 
   return (

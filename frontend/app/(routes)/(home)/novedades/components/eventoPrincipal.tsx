@@ -1,6 +1,6 @@
 import Link from "next/link";
 import FechaEvento from "./fecha";
-import { Novedad } from "@/types/novedad"; // Importamos la interfaz
+import { Novedad } from "@/types/novedad";
 
 interface EventoPrincipalProps {
   evento: Novedad;

@@ -5,19 +5,21 @@ import MisionVision from "@/components/clientes/misionVision";
 import Navbar from "@/components/clientes/navbar";
 import Recetas from "@/components/clientes/recetas";
 import Redes from "@/components/clientes/redes";
+import ProductSlider from "@/components/clientes/sliderProducto";
 import Testimonios from "@/components/clientes/testimonios";
 
 export default function Home() {
   return (
     <div>
-      <Navbar/>
-      <Redes/>
-      <Banner/>
-      <MisionVision/>
-      <Beneficios/>
-      <Testimonios/>
+      <Navbar />
+      <Redes />
+      <Banner />
+      <ProductSlider />
+      <MisionVision />
+      <Beneficios />
+      <Testimonios />
       <Recetas />
-      <Footer/>
+      <Footer />
     </div>
   );
 }

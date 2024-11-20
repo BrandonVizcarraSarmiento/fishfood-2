@@ -6,6 +6,7 @@ import Slider from "./components/slider";
 import Redes from "@/components/clientes/redes";
 import Footer from "@/components/clientes/footer";
 import { useGetProductos } from '@/api/productos/useGetProductos';
+import ProductosSkeleton from '@/components/skeleton/productosSkeleton';
 
 const SeccionProductos = () => {
   const router = useRouter();
@@ -16,7 +17,7 @@ const SeccionProductos = () => {
   };
 
   if (loading) {
-    return <p>Cargando productos...</p>;
+    return <ProductosSkeleton/>;
   }
 
   if (error) {
