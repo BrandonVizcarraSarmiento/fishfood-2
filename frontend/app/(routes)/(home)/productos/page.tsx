@@ -17,7 +17,7 @@ const SeccionProductos = () => {
   };
 
   if (loading) {
-    return <ProductosSkeleton/>;
+    return <ProductosSkeleton />;
   }
 
   if (error) {
@@ -27,7 +27,7 @@ const SeccionProductos = () => {
   const productosDestacados = productos.filter(producto => producto.destacado);
 
   return (
-    <div>
+    <>
       <Navbar />
       <Redes />
       <section className="flex flex-col items-center p-4">
@@ -61,7 +61,7 @@ const SeccionProductos = () => {
         {productos.length > 0 && <Slider productos={productos} />}
       </section>
       <Footer />
-    </div>
+    </>
   );
 }
 

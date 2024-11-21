@@ -6,7 +6,7 @@ import Footer from "@/components/clientes/footer";
 
 const About = () => {
     return (
-        <div>
+        <>
             <Navbar />
             <Redes/>
             <div className="py-4">
@@ -14,7 +14,7 @@ const About = () => {
                 <Info />
             </div>
             <Footer/>
-        </div>
+        </>
     );
 }
 

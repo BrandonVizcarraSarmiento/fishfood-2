@@ -19,15 +19,14 @@ const Novedades = () => {
   }
 
   return (
-    <div>
+    <>
       <Navbar />
       <Redes />
       {novedades.length > 0 && <EventoPrincipal evento={novedades[0]} />} {/* Evento más reciente */}
       <OtrosEventos eventos={novedades.slice(1)} /> {/* Otros eventos */}
       <Footer />
-    </div>
+    </>
   );
 };
 
 export default Novedades;
-

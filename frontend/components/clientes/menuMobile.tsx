@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import Link from "next/link";
-
+ 
 const MenuMobile = () => {
     return (
         <Popover>
@@ -13,9 +13,10 @@ const MenuMobile = () => {
                 <Link href="/about" className="block text-lg font-medium  hover:text-blue-500 transition-colors">Sobre nosotros</Link>
                 <Link href="/productos" className="block text-lg font-medium  hover:text-blue-500 transition-colors">Productos</Link>
                 <Link href="/novedades" className="block text-lg font-medium  hover:text-blue-500 transition-colors">Novedades</Link>
+                <Link href="/recetas" className="block text-lg font-medium  hover:text-blue-500 transition-colors">Recetas</Link>
             </PopoverContent>
         </Popover>
     );
 }
-
+ 
 export default MenuMobile;
