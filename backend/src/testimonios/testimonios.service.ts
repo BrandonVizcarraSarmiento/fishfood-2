@@ -36,7 +36,13 @@ export class TestimoniosService {
     return testimonioActulizado;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} testimonio`;
+  async remove(id: number) {
+    const testimonioEliminado = await this.prismaService.testimonios.delete({ where: { id } });
+
+    if (!testimonioEliminado) {
+      throw new NotFoundException(`Testimonio ${id} no encontrado`);
+    }
+
+    return testimonioEliminado;
   }
 }

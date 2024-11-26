@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="flex gap-4">
             <div className="flex flex-none items-center justify-center border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-black h-[50px] w-[50px] rounded-lg">
               <img
-                src="/img/logo1.jpg"
+                src="/img/Logo1.jpg"
                 alt="Success"
                 width={40}
                 height={40}
