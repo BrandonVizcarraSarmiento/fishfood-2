@@ -78,3 +78,21 @@ model Secciones {
   descripcion String
   imgLink  String
 }
+
+model Recetas {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  imagen      String
+  ingredientes String   
+  pasos       Paso[]    
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Paso {
+  id          Int      @id @default(autoincrement())
+  numero      Int      
+  descripcion String   
+  recetaId    Int      
+  receta    Recetas @relation(fields: [recetaId], references: [id], onDelete: Cascade)
+}

@@ -36,6 +36,9 @@ const NavbarDashboard = () => {
                     <Link href="/dashboard/novedades" className="flex items-center p-2 hover:bg-gray-500 rounded">
                         Novedades
                     </Link>
+                    <Link href="/dashboard/recetas" className="flex items-center p-2 hover:bg-gray-500 rounded">
+                        Recetas
+                    </Link>
                 </nav>
                 <div className="px-4 mb-6">
                     <CerrarSesion />

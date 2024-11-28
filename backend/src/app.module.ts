@@ -9,9 +9,10 @@ import { BeneficiosModule } from './beneficios/beneficios.module';
 import { TestimoniosModule } from './testimonios/testimonios.module';
 import { AboutModule } from './about/about.module';
 import { SeccionesModule } from './secciones/secciones.module';
+import { RecetasModule } from './recetas/recetas.module';
 
 @Module({
-  imports: [AuthModule, ProductosModule, NovedadesModule, BannerModule, RedesModule, MisionModule, BeneficiosModule, TestimoniosModule, AboutModule, SeccionesModule],
+  imports: [AuthModule, ProductosModule, NovedadesModule, BannerModule, RedesModule, MisionModule, BeneficiosModule, TestimoniosModule, AboutModule, SeccionesModule, RecetasModule],
   controllers: [],
   providers: [],
 })
