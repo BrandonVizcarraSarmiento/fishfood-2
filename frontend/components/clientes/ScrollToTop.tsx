@@ -31,7 +31,7 @@ const ScrollToTop = () => {
                         position: "fixed",
                         bottom: "20px",
                         right: "20px",
-                        zIndex: 1000,
+                        zIndex: 30,
                         padding: "10px 15px",
                         backgroundColor: "#007bff",
                         color: "#fff",

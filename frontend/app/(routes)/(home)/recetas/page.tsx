@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Footer from "@/components/clientes/footer";
 import Navbar from "@/components/clientes/navbar";
 import Redes from "@/components/clientes/redes";
+import RecetasSkeleton from "@/components/skeleton/recetasSkeleton";
 
 const SeccionRecetas = () => {
     const { recetas, loading, error } = useGetRecetas();
@@ -22,17 +23,17 @@ const SeccionRecetas = () => {
         setRecetaSeleccionada(null);
     };
 
-    if (loading) return <p>Cargando recetas...</p>;
+    if (loading) return <RecetasSkeleton />;
     if (error) return <p>Error al cargar recetas: {error}</p>;
 
     return (
         <>
             <Navbar />
             <Redes />
-            <section>
-                <div className="p-4 mx-20 mb-10">
+            <section className="my-16">
+                <div className="p-4 mx-10 sm:mx-10 md:mx-12 lg:mx-20 xl:mx-28">
                     <h1 className="text-2xl font-bold mb-4">Recetas</h1>
-                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                         {recetasFiltradas.map((receta) => (
                             <Card
                                 key={receta.id}
@@ -42,24 +43,13 @@ const SeccionRecetas = () => {
                                 <CardHeader>
                                     <CardTitle>{receta.titulo}</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <div>
                                     <img
                                         src={receta.imagen}
                                         alt={receta.titulo}
-                                        className="w-full h-48 object-cover mb-2"
+                                        className="w-full h-64 object-cover rounded-lg"
                                     />
-                                </CardContent>
-                                <CardContent>
-                                    <p><strong>Ingredientes:</strong> {receta.ingredientes}</p>
-                                </CardContent>
-                                <CardContent>
-                                    <p><strong>Pasos:</strong></p>
-                                    <ol className="list-decimal pl-5">
-                                        {receta.pasos.map((paso) => (
-                                            <li key={paso.id}>{paso.descripcion}</li>
-                                        ))}
-                                    </ol>
-                                </CardContent>
+                                </div>
                             </Card>
                         ))}
                     </div>
@@ -67,7 +57,7 @@ const SeccionRecetas = () => {
             </section>
 
             {recetaSeleccionada && (
-                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-5">
                     <div className="bg-gray-800 text-white p-6 rounded-lg w-full sm:w-4/5 md:w-3/5 lg:w-2/3 xl:w-1/2 relative transition-transform transform scale-105">
                         <button
                             onClick={cerrarReceta}

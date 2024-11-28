@@ -56,11 +56,19 @@ const Footer = () => {
                   Novedades
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/recetas"
+                  className="p-2 text-lg hover:text-black md:text-sm font-bold dark:hover:text-neutral-300 dark:text-white dark:font-bold"
+                >
+                  Recetas
+                </Link>
+              </li>
             </ul>
           </nav>
 
           {/* Columna de Contactanos */}
-          <div className="flex flex-col gap-2 md:w-1/4 md:items-end">
+          <div className="flex flex-col gap-2 md:w-1/4 md:items-end items-center">
             <h3 className="text-lg font-bold text-black dark:text-white">
               Contáctanos
             </h3>
