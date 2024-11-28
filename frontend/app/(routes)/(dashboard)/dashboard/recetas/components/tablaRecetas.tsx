@@ -17,7 +17,7 @@ const TablaRecetas = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
 
     const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(() => {
-        const savedColumns = localStorage.getItem('visibleColumns');
+        const savedColumns = localStorage.getItem('visibleColumnsRecetas');
         return savedColumns ? JSON.parse(savedColumns) : { titulo: true, ingredientes: true, acciones: true };
     });
 
@@ -25,7 +25,7 @@ const TablaRecetas = () => {
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     useEffect(() => {
-        localStorage.setItem('visibleColumns', JSON.stringify(visibleColumns));
+        localStorage.setItem('visibleColumnsRecetas', JSON.stringify(visibleColumns));
     }, [visibleColumns]);
 
     useEffect(() => {
