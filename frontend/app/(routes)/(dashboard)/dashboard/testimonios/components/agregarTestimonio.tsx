@@ -29,18 +29,21 @@ const AgregarTestimonio = ({ onSubmit }: AgregarTestimonioProps) => {
         value={nombre}
         onChange={(e) => setNombre(e.target.value)}
         placeholder="Nombre"
+        required
       />
       <Input
         name="testimonio"
         value={testimonio}
         onChange={(e) => setTestimonio(e.target.value)}
         placeholder="Testimonio"
+        required
       />
       <Input
         name="imgLink"
         value={imgLink}
         onChange={(e) => setImgLink(e.target.value)}
         placeholder="URL de la imagen"
+        required
       />
       <Button type="submit">Agregar Testimonio</Button>
     </form>
