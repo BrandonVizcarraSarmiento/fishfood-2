@@ -82,6 +82,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
                             onChange={(e) =>
                                 setNuevaReceta({ ...nuevaReceta, titulo: e.target.value })
                             }
+                            required
                         />
                         <Input
                             name="ingredientes"
@@ -93,6 +94,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
                                     ingredientes: e.target.value,
                                 })
                             }
+                            required
                         />
                         <Input
                             name="imagen"
@@ -101,6 +103,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
                             onChange={(e) =>
                                 setNuevaReceta({ ...nuevaReceta, imagen: e.target.value })
                             }
+                            required
                         />
                         <div className="space-y-2">
                             {nuevaReceta.pasos.map((paso, index) => (
@@ -112,6 +115,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
                                         onChange={(e) =>
                                             handleCambiarPaso(index, e.target.value)
                                         }
+                                        required
                                     />
                                     <Button
                                         variant="destructive"
