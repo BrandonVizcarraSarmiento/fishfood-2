@@ -25,10 +25,9 @@ const EliminarRecetas: React.FC<EliminarRecetasProps> = ({ id, onDeleteSuccess }
     const handleEliminarReceta = async () => {
         const success = await deleteReceta(id);
         if (success) {
-            alert("Receta eliminada con éxito");
             onDeleteSuccess();
         } else {
-            alert("Error al eliminar la receta");
+            console.error("Error al eliminar la receta");
         }
     };
 

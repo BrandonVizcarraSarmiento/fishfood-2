@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Receta, Paso } from "@/types/receta";
 import { addReceta } from "@/api/recetas/addRecetas";
 
-const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
+const AgregarRecetas = ({ children, onAgregar }: { children: React.ReactNode; onAgregar: (receta: Receta) => void }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [nuevaReceta, setNuevaReceta] = useState<Receta>({
@@ -50,6 +50,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
 
     const handleGuardar = async (event: React.FormEvent) => {
         event.preventDefault();
+        onAgregar(nuevaReceta);
         const resultado = await addReceta(nuevaReceta);
         if (resultado) {
             alert("Receta agregada correctamente");
@@ -61,7 +62,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
             });
             setIsOpen(false);
         } else {
-            setError("Error al agregar la receta");
+            console.error("Error al editar la receta");
         }
     };
 
@@ -120,6 +121,7 @@ const AgregarRecetas = ({ children }: { children: React.ReactNode }) => {
                                     <Button
                                         variant="destructive"
                                         size="sm"
+                                        type="button"
                                         onClick={() => handleEliminarPaso(index)}
                                     >
                                         Eliminar

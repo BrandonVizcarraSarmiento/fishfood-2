@@ -5,34 +5,52 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useGetRecetas } from "@/api/recetas/getRecetas";
 import EditarRecetas from "./editarRecetas";
 import EliminarRecetas from "./eliminarRecetas";
 import { Receta } from "@/types/receta";
 import { Paginacion } from "../../../components/paginacion";
 
-const TablaRecetas = () => {
-    const { recetas, loading, error } = useGetRecetas();
-    const [recetasActuales, setRecetasActuales] = useState<Receta[]>([]);
+const TablaRecetas = ({ recetas }: { recetas: Receta[] }) => {
+    const [recetasActuales, setRecetasActuales] = useState<Receta[]>(recetas);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
+    // Estado para las columnas visibles
     const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(() => {
-        const savedColumns = localStorage.getItem('visibleColumnsRecetas');
-        return savedColumns ? JSON.parse(savedColumns) : { titulo: true, ingredientes: true, acciones: true };
+        const savedColumns = localStorage.getItem("visibleColumnsRecetas");
+        return savedColumns ? JSON.parse(savedColumns) : { titulo: true, ingredientes: true, imagen: true, acciones: true };
     });
 
+    // Estado para la paginación
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(() => {
+        const savedItemsPerPage = localStorage.getItem("itemsPerPageRecetas");
+        return savedItemsPerPage ? parseInt(savedItemsPerPage) : 5;
+    });
+
+    // Estado para el toast
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        localStorage.setItem('visibleColumnsRecetas', JSON.stringify(visibleColumns));
+        setRecetasActuales(recetas);
+    }, [recetas]);
+
+    useEffect(() => {
+        localStorage.setItem("visibleColumnsRecetas", JSON.stringify(visibleColumns));
     }, [visibleColumns]);
 
     useEffect(() => {
-        if (recetas) {
-            setRecetasActuales(recetas);
-        }
-    }, [recetas]);
+        localStorage.setItem("itemsPerPageRecetas", itemsPerPage.toString());
+    }, [itemsPerPage]);
+
+    const mostrarToast = (mensaje: string) => {
+        setToastMessage(mensaje);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+            setToastMessage(null);
+        }, 3000);
+    };
 
     const handleEditarReceta = (recetaEditada: Receta) => {
         setRecetasActuales((prev) =>
@@ -42,13 +60,14 @@ const TablaRecetas = () => {
 
     const handleEliminarReceta = (id: number) => {
         setRecetasActuales((prev) => prev.filter((receta) => receta.id !== id));
+        mostrarToast("Receta eliminada exitosamente");
     };
 
     const handleColumnVisibility = (column: string) => {
-        setVisibleColumns((prev: Record<string, boolean>) => {
-            const updatedColumns = { ...prev, [column]: !prev[column] };
-            return updatedColumns;
-        });
+        setVisibleColumns((prev) => ({
+            ...prev,
+            [column]: !prev[column],
+        }));
     };
 
     const filteredRecetas = recetasActuales.filter((receta) =>
@@ -59,11 +78,13 @@ const TablaRecetas = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredRecetas.slice(indexOfFirstItem, indexOfLastItem);
 
-    if (loading) return <p>Cargando...</p>;
-    if (error) return <p>Error: {error}</p>;
-
     return (
         <div>
+            {showToast && toastMessage && (
+                <div className="fixed bottom-4 right-4 bg-gray-950 text-white py-2 px-4 rounded shadow-lg">
+                    {toastMessage}
+                </div>
+            )}
             <div className="mb-4 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
                 <Input
                     placeholder="Buscar receta..."
@@ -99,36 +120,55 @@ const TablaRecetas = () => {
                 </Select>
             </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        {visibleColumns.titulo && <TableHead>Título</TableHead>}
-                        {visibleColumns.ingredientes && <TableHead>Ingredientes</TableHead>}
-                        {visibleColumns.acciones && <TableHead>Acciones</TableHead>}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {currentItems.map((receta) => (
-                        <TableRow key={receta.id}>
-                            {visibleColumns.titulo && <TableCell>{receta.titulo}</TableCell>}
-                            {visibleColumns.ingredientes && <TableCell>{receta.ingredientes}</TableCell>}
-                            {visibleColumns.acciones && (
-                                <TableCell className="flex space-x-2">
-                                    <EditarRecetas receta={receta} onEditSuccess={handleEditarReceta} />
-                                    <EliminarRecetas id={receta.id!} onDeleteSuccess={() => handleEliminarReceta(receta.id!)} />
-                                </TableCell>
-                            )}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            {recetasActuales.length === 0 ? (
+                <p>No hay recetas disponibles. Agrega una nueva receta para empezar.</p>
+            ) : (
+                <>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                {visibleColumns.titulo && <TableHead>Título</TableHead>}
+                                {visibleColumns.ingredientes && <TableHead>Ingredientes</TableHead>}
+                                {visibleColumns.imagen && <TableHead>Imagen</TableHead>}
+                                {visibleColumns.acciones && <TableHead>Acciones</TableHead>}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {currentItems.map((receta) => (
+                                <TableRow key={receta.id}>
+                                    {visibleColumns.titulo && <TableCell>{receta.titulo}</TableCell>}
+                                    {visibleColumns.ingredientes && <TableCell>{receta.ingredientes}</TableCell>}
+                                    {visibleColumns.imagen && (
+                                        <TableCell>
+                                            <img
+                                                src={receta.imagen}
+                                                alt={receta.titulo}
+                                                className="w-16 h-16 object-cover rounded-lg shadow-lg transition-transform duration-300 ease-in-out hover:scale-105"
+                                            />
+                                        </TableCell>
+                                    )}
+                                    {visibleColumns.acciones && (
+                                        <TableCell className="flex space-x-2">
+                                            <EditarRecetas receta={receta} onEditSuccess={handleEditarReceta} />
+                                            <EliminarRecetas
+                                                id={receta.id!}
+                                                onDeleteSuccess={() => handleEliminarReceta(receta.id!)}
+                                            />
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
 
-            <Paginacion
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-                totalItems={filteredRecetas.length}
-                itemsPerPage={itemsPerPage}
-            />
+                    <Paginacion
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
+                        totalItems={filteredRecetas.length}
+                        itemsPerPage={itemsPerPage}
+                    />
+                </>
+            )}
         </div>
     );
 };

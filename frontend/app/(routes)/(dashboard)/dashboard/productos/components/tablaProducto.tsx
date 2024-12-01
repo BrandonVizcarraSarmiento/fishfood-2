@@ -97,7 +97,7 @@ const TablaProductos: React.FC<TablaProductosProps> = ({ productos, setProductos
     return (
         <div>
             {showToast && toastMessage && (
-                <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
+                <div className="fixed bottom-4 right-4 bg-gray-950 text-white py-2 px-4 rounded shadow-lg">
                     {toastMessage}
                 </div>
             )}
@@ -155,7 +155,11 @@ const TablaProductos: React.FC<TablaProductosProps> = ({ productos, setProductos
                             {visibleColumns.precio && <TableCell>{producto.precio.toFixed(2)}</TableCell>}
                             {visibleColumns.imagen && (
                                 <TableCell>
-                                    <img src={producto.imagen} alt={producto.nombre} className="w-16 h-16 object-cover" />
+                                    <img
+                                        src={producto.imagen}
+                                        alt={producto.nombre}
+                                        className="w-16 h-16 object-cover rounded-lg shadow-lg transition-transform duration-300 ease-in-out hover:scale-105"
+                                    />
                                 </TableCell>
                             )}
                             {visibleColumns.destacado && (

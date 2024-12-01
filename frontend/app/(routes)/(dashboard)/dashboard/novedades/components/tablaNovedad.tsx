@@ -93,7 +93,7 @@ const TablaNovedad: React.FC<TablaNovedadProps> = ({ novedades, setNovedades }) 
     return (
         <div>
             {showToast && toastMessage && (
-                <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
+                <div className="fixed bottom-4 right-4 bg-gray-950 text-white py-2 px-4 rounded shadow-lg">
                     {toastMessage}
                 </div>
             )}
@@ -150,7 +150,11 @@ const TablaNovedad: React.FC<TablaNovedadProps> = ({ novedades, setNovedades }) 
                             {visibleColumns.info && <TableCell>{limitarDescripcion(novedad.info, 50)}</TableCell>}
                             {visibleColumns.imagen && (
                                 <TableCell>
-                                    <img src={novedad.imagen} alt={novedad.titulo} className="w-16 h-16 object-cover" />
+                                    <img
+                                        src={novedad.imagen}
+                                        alt={novedad.titulo}
+                                        className="w-16 h-16 object-cover rounded-lg shadow-lg transition-transform duration-300 ease-in-out hover:scale-105"
+                                    />
                                 </TableCell>
                             )}
                             {visibleColumns.fecha && <TableCell>{novedad.fecha}</TableCell>}

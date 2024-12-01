@@ -76,9 +76,9 @@ const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) 
         if (resultado) {
             onEditSuccess(recetaEditada);
             setIsOpen(false);
-            setPasosEliminados([]); // Limpiar pasos eliminados si todo salió bien
+            setPasosEliminados([]);
         } else {
-            setError("Error al editar la receta");
+            console.error("Error al editar la receta");
         }
     };
 
@@ -104,6 +104,7 @@ const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) 
                             onChange={(e) =>
                                 setRecetaEditada({ ...recetaEditada, titulo: e.target.value })
                             }
+                            required
                         />
                         <Input
                             name="ingredientes"
@@ -115,6 +116,7 @@ const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) 
                                     ingredientes: e.target.value,
                                 })
                             }
+                            required
                         />
                         <Input
                             name="imagen"
@@ -123,6 +125,7 @@ const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) 
                             onChange={(e) =>
                                 setRecetaEditada({ ...recetaEditada, imagen: e.target.value })
                             }
+                            required
                         />
                         <div className="space-y-2">
                             {recetaEditada.pasos.map((paso, index) => (
@@ -134,6 +137,7 @@ const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) 
                                         onChange={(e) =>
                                             handleCambiarPaso(index, e.target.value)
                                         }
+                                        required
                                     />
                                     <Button
                                         variant="destructive"
