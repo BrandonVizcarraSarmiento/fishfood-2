@@ -25,6 +25,7 @@ const TablaReceta: React.FC<TablaRecetaProps> = ({ recetas, setRecetas }) => {
         return savedColumns ? JSON.parse(savedColumns) : {
             titulo: true,
             ingredientes: true,
+            imagen: true,
             acciones: true,
         };
     });
