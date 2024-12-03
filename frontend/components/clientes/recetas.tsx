@@ -1,8 +1,30 @@
+"use client";
+
+import { useInView } from "react-intersection-observer";
+
 const Recetas = () => {
+  const { ref: sectionRef, inView: sectionInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.5,
+  });
+
+  const { ref: ingredientesRef, inView: ingredientesInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.5,
+  });
+
+  const { ref: elaboracionRef, inView: elaboracionInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.5,
+  });
+
   return (
     <div className="p-4">
       <div className="max-w-6xl mx-auto my-20 p-4 border-2 border-black rounded-lg dark:border-white">
-        <section className="text-center">
+        <section
+          ref={sectionRef}
+          className={`text-center transition-all duration-1000 ease-out ${sectionInView ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-10"}`}
+        >
           <img src="/img/logoRecetas.png" alt="Logo de Recetas" width={150} height={50} />
           <h2 className="text-4xl font-bold mb-4">Cocina con Nosotros</h2>
           <div className="flex justify-center">
@@ -14,7 +36,11 @@ const Recetas = () => {
             <span className="text-green-600"><strong>con ensalada</strong></span>
           </h2>
         </section>
-        <section className="flex justify-around my-4">
+
+        <section
+          ref={ingredientesRef}
+          className={`flex justify-around my-4 transition-all duration-1000 ease-out ${ingredientesInView ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-10"}`}
+        >
           <div className="flex flex-col items-center text-center">
             <img src="/img/tiempo.png" alt="Icono de tiempo" width={30} height={30} />
             <p>Tiempo <span className="font-semibold">5 min</span></p>
@@ -28,7 +54,11 @@ const Recetas = () => {
             <p>Dificultad <span className="font-semibold">Fácil</span></p>
           </div>
         </section>
-        <section className="grid grid-cols-2 gap-4">
+
+        <section
+          ref={elaboracionRef}
+          className={`grid grid-cols-2 gap-4 transition-all duration-1000 ease-out ${elaboracionInView ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-10"}`}
+        >
           <div className='p-4 sm:p-10'>
             <h3 className="font-bold text-lg">Ingredientes</h3>
             <ul className="list-disc ml-5">

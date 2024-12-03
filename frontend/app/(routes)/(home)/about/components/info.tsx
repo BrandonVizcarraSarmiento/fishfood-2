@@ -1,8 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useGetSecciones } from "@/api/secciones/getSecciones";
 import InfoAboutSkeleton from "@/components/skeleton/infoAboutSkeleton";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardFooter } from "@/components/ui/card";
 
 const Info = () => {
   const { seccionesData, loading, error } = useGetSecciones();
@@ -14,23 +15,37 @@ const Info = () => {
     <div className="w-full max-w-7xl mx-auto px-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center my-20 mx-10">
         {seccionesData.map((seccion, index) => (
-          <Card
+          <motion.div
             key={seccion.id}
-            className="flex flex-col items-center text-center space-y-2 hover:border-primary transition-colors duration-300 bg-slate-200 dark:bg-slate-950"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.2 }}
+            className="flex flex-col items-center text-center space-y-2"
           >
-            <CardContent>
-              <img
-                src={seccion.imgLink}
-                width={300}
-                height={300}
-                alt={`imagen de ${index === 0 ? "misión" : "visión"}`}
-                className="h-64 w-64 mx-auto"
-              />
-            </CardContent>
-            <CardFooter>
-              <p className="text-base md:px-8 text-justify">{seccion.descripcion}</p>
-            </CardFooter>
-          </Card>
+            <Card className="hover:border-primary transition-colors duration-300 bg-slate-200 dark:bg-slate-950">
+              {/* El contenedor ahora no tiene clases para el ancho */}
+              <div>
+                <motion.img
+                  src={seccion.imgLink}
+                  alt={`imagen de ${index === 0 ? "misión" : "visión"}`}
+                  className="w-full h-80 mx-auto  rounded-lg  "
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                />
+              </div>
+              <CardFooter>
+                <motion.p
+                  className="text-base p-4 md:p-8 text-justify"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {seccion.descripcion}
+                </motion.p>
+              </CardFooter>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </div>

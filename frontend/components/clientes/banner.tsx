@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useGetBanner } from "@/api/banner/getBanner";
@@ -12,7 +13,7 @@ const Banner = () => {
 
   useEffect(() => {
     if (banner) {
-      setBannerImage(banner.imgLink); // Asignamos el enlace de la imagen del banner
+      setBannerImage(banner.imgLink);
     }
   }, [banner]);
 
@@ -24,8 +25,23 @@ const Banner = () => {
     return <div>{error}</div>;
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 1.0 } },
+  };
+
   return (
-    <div className="relative w-full h-screen flex items-center justify-center">
+    <motion.div
+      className="relative w-full h-screen flex items-center justify-center"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* SVG difuminado detrás de la imagen del banner */}
       <svg
         className="absolute inset-0 -z-10 blur-3xl"
@@ -81,7 +97,10 @@ const Banner = () => {
       </svg>
 
       {bannerImage && (
-        <div className="relative z-5">
+        <motion.div
+          className="relative z-5"
+          variants={itemVariants}
+        >
           <img
             src={bannerImage}
             alt="Banner"
@@ -89,23 +108,34 @@ const Banner = () => {
             width={700}
             height={700}
           />
-        </div>
+        </motion.div>
       )}
 
       {bannerImage && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-2">
-          <h1 className="mt-8 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-medium leading-none text-primary">
+        <motion.div
+          className="absolute inset-0 flex flex-col items-center justify-center text-center z-2"
+          variants={containerVariants}
+        >
+          <motion.h1
+            className="mt-8 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-medium leading-none text-primary"
+            variants={itemVariants}
+          >
             FishFood
-          </h1>
-          <span className="text-lg md:text-xl mb-4 font-light text-white">
+          </motion.h1>
+          <motion.span
+            className="text-lg md:text-xl mb-4 font-light text-white"
+            variants={itemVariants}
+          >
             Disfruta el sabor del mar en cada bocado
-          </span>
-          <Button>
-            <Link href="/productos">Productos</Link>
-          </Button>
-        </div>
+          </motion.span>
+          <motion.div variants={itemVariants}>
+            <Button>
+              <Link href="/productos">Productos</Link>
+            </Button>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
