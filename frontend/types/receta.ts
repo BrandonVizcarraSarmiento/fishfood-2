@@ -5,11 +5,11 @@ export interface Paso {
 }
 
 export interface Receta {
-    id?: number;
+    id: number;
     titulo: string;
     ingredientes: string;
     imagen: string;
     pasos: Paso[];
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt: string;
+    updatedAt: string;
 }

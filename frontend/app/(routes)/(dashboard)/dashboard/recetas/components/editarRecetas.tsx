@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -13,158 +11,175 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Receta, Paso } from "@/types/receta";
 import { editReceta } from "@/api/recetas/editRecetas";
-import { PencilIcon } from "lucide-react";
 import { deletePaso } from "@/api/recetas/deletePaso";
 
-interface EditarRecetasProps {
+interface EditarRecetaProps {
     receta: Receta;
-    onEditSuccess: (recetaEditada: Receta) => void;
+    onUpdate: (receta: Receta) => void;
+    children: React.ReactNode;
 }
 
-const EditarRecetas: React.FC<EditarRecetasProps> = ({ receta, onEditSuccess }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [recetaEditada, setRecetaEditada] = useState<Receta>(receta);
+const EditarReceta: React.FC<EditarRecetaProps> = ({ receta, onUpdate, children }) => {
+    const [formData, setFormData] = useState({
+        titulo: "",
+        ingredientes: "",
+        imagen: "",
+    });
+    const [pasos, setPasos] = useState<Paso[]>([]);
+    const [newPaso, setNewPaso] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [pasosEliminados, setPasosEliminados] = useState<Paso[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [deletedPasos, setDeletedPasos] = useState<number[]>([]);
 
-    const handleAgregarPaso = () => {
-        const nuevoPaso: Paso = {
-            numero: recetaEditada.pasos.length + 1,
-            descripcion: "",
-        };
-        setRecetaEditada({
-            ...recetaEditada,
-            pasos: [...recetaEditada.pasos, nuevoPaso],
-        });
-    };
-
-    const handleCambiarPaso = (index: number, descripcion: string) => {
-        const pasosActualizados = [...recetaEditada.pasos];
-        pasosActualizados[index].descripcion = descripcion;
-        setRecetaEditada({ ...recetaEditada, pasos: pasosActualizados });
-    };
-
-    const handleEliminarPaso = (index: number) => {
-        const pasoEliminado = recetaEditada.pasos[index];
-        if (pasoEliminado.id) {
-            setPasosEliminados([...pasosEliminados, pasoEliminado]);
+    useEffect(() => {
+        if (receta) {
+            setFormData({
+                titulo: receta.titulo,
+                ingredientes: receta.ingredientes,
+                imagen: receta.imagen,
+            });
+            setPasos(receta.pasos || []);
         }
+    }, [receta]);
+    
 
-        const pasosActualizados = recetaEditada.pasos
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddPaso = () => {
+        if (!newPaso.trim()) return;
+        const numero = pasos.length + 1;
+        setPasos([...pasos, { numero, descripcion: newPaso }]);
+        setNewPaso("");
+    };
+
+    const handleEditPaso = (index: number, descripcion: string) => {
+        const updatedPasos = pasos.map((paso, i) =>
+            i === index ? { ...paso, descripcion } : paso
+        );
+        setPasos(updatedPasos);
+    };
+
+    const handleDeletePaso = (index: number) => {
+        const pasoToDelete = pasos[index];
+        if (pasoToDelete.id) { // Asegúrate de que el paso tenga un ID antes de marcarlo para eliminación.
+            setDeletedPasos([...deletedPasos, pasoToDelete.id]);
+        }
+        const updatedPasos = pasos
             .filter((_, i) => i !== index)
             .map((paso, i) => ({ ...paso, numero: i + 1 }));
+        setPasos(updatedPasos);
+    };    
 
-        setRecetaEditada({ ...recetaEditada, pasos: pasosActualizados });
-    };
-
-    const handleGuardar = async (event: React.FormEvent) => {
-        event.preventDefault();
-
-        // Eliminar pasos pendientes desde la API
-        for (const paso of pasosEliminados) {
-            if (paso.id) {
-                const eliminado = await deletePaso(receta.id!, paso.id);
-                if (!eliminado) {
-                    setError(`Error al eliminar el paso ${paso.numero}`);
+    const handleSave = async () => {
+        const { titulo, ingredientes, imagen } = formData;
+    
+        if (!titulo || !ingredientes || !imagen || pasos.length === 0) {
+            setError("Todos los campos y al menos un paso son obligatorios.");
+            return;
+        }
+    
+        const updatedReceta: Receta = {
+            ...receta,
+            titulo,
+            ingredientes,
+            imagen,
+            pasos,
+            updatedAt: new Date().toISOString(),
+        };
+    
+        if (!receta.id) {
+            setError("La receta no tiene un ID válido.");
+            return;
+        }
+    
+        try {
+            // Elimina los pasos marcados en el backend
+            for (const pasoId of deletedPasos) {
+                const success = await deletePaso(receta.id, pasoId);
+                if (!success) {
+                    setError(`No se pudo eliminar el paso con ID ${pasoId}`);
                     return;
                 }
             }
-        }
-
-        // Actualizar receta con los pasos restantes
-        const resultado = await editReceta(receta, recetaEditada);
-        if (resultado) {
-            onEditSuccess(recetaEditada);
+    
+            // Edita la receta con los pasos actualizados
+            const result = await editReceta(receta, updatedReceta);
+            onUpdate(result);
             setIsOpen(false);
-            setPasosEliminados([]);
-        } else {
-            console.error("Error al editar la receta");
+        } catch (error) {
+            setError("Error al actualizar la receta.");
         }
     };
-
+    
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                    <PencilIcon className="h-4 w-4 mr-2" />
-                    <span>Editar</span>
-                </Button>
-            </DialogTrigger>
+            <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Editar Receta</DialogTitle>
                 </DialogHeader>
                 {error && <p className="text-red-500">{error}</p>}
-                <form onSubmit={handleGuardar}>
+                <form>
                     <div className="space-y-4">
                         <Input
                             name="titulo"
+                            value={formData.titulo}
+                            onChange={handleInputChange}
                             placeholder="Título de la receta"
-                            value={recetaEditada.titulo}
-                            onChange={(e) =>
-                                setRecetaEditada({ ...recetaEditada, titulo: e.target.value })
-                            }
-                            required
                         />
                         <Input
                             name="ingredientes"
+                            value={formData.ingredientes}
+                            onChange={handleInputChange}
                             placeholder="Ingredientes"
-                            value={recetaEditada.ingredientes}
-                            onChange={(e) =>
-                                setRecetaEditada({
-                                    ...recetaEditada,
-                                    ingredientes: e.target.value,
-                                })
-                            }
-                            required
                         />
                         <Input
                             name="imagen"
+                            value={formData.imagen}
+                            onChange={handleInputChange}
                             placeholder="URL de la imagen"
-                            value={recetaEditada.imagen}
-                            onChange={(e) =>
-                                setRecetaEditada({ ...recetaEditada, imagen: e.target.value })
-                            }
-                            required
                         />
-                        <div className="space-y-2">
-                            {recetaEditada.pasos.map((paso, index) => (
-                                <div key={index} className="flex items-center space-x-2">
-                                    <Input
-                                        name={`paso-${index}`}
-                                        placeholder={`Paso ${paso.numero}`}
-                                        value={paso.descripcion}
-                                        onChange={(e) =>
-                                            handleCambiarPaso(index, e.target.value)
-                                        }
-                                        required
-                                    />
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        type="button"
-                                        onClick={() => handleEliminarPaso(index)}
-                                    >
-                                        Eliminar
-                                    </Button>
-                                </div>
-                            ))}
-                            <Button
-                                variant="secondary"
-                                type="button"
-                                onClick={handleAgregarPaso}
-                            >
-                                Agregar Paso
-                            </Button>
+                        <div>
+                            <label className="block mb-2">Pasos:</label>
+                            <div className="flex items-center space-x-2">
+                                <Input
+                                    value={newPaso}
+                                    onChange={(e) => setNewPaso(e.target.value)}
+                                    placeholder="Añadir paso"
+                                />
+                                <Button type="button" onClick={handleAddPaso}>Añadir</Button>
+                            </div>
+                            <ul className="mt-2 space-y-2">
+                                {(pasos || []).map((paso, index) => (
+                                    <li key={index} className="flex items-center space-x-4">
+                                        <Input
+                                            value={paso.descripcion}
+                                            onChange={(e) => handleEditPaso(index, e.target.value)}
+                                            className="flex-1"
+                                        />
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => handleDeletePaso(index)}
+                                            type="button"
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="submit">Guardar Cambios</Button>
-                    </DialogFooter>
                 </form>
+                <DialogFooter>
+                    <Button onClick={handleSave}>Guardar cambios</Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
 };
 
-export default EditarRecetas;
+export default EditarReceta;

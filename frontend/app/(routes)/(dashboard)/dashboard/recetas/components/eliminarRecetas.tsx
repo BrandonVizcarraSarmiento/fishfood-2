@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,18 +14,19 @@ import {
 import { TrashIcon } from "lucide-react";
 import { deleteReceta } from "@/api/recetas/deleteRecetas";
 
-interface EliminarRecetasProps {
+interface EliminarRecetaProps {
     id: number;
-    onDeleteSuccess: () => void;
+    onDelete: (id: number) => void;
 }
 
-const EliminarRecetas: React.FC<EliminarRecetasProps> = ({ id, onDeleteSuccess }) => {
-    const handleEliminarReceta = async () => {
+const EliminarReceta: React.FC<EliminarRecetaProps> = ({ id, onDelete }) => {
+    const eliminarReceta = async () => {
         const success = await deleteReceta(id);
+
         if (success) {
-            onDeleteSuccess();
+            onDelete(id);
         } else {
-            console.error("Error al eliminar la receta");
+            console.error("Error al eliminar la receta.");
         }
     };
 
@@ -49,11 +48,11 @@ const EliminarRecetas: React.FC<EliminarRecetasProps> = ({ id, onDeleteSuccess }
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleEliminarReceta}>Eliminar</AlertDialogAction>
+                    <AlertDialogAction onClick={eliminarReceta}>Eliminar</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
     );
 };
 
-export default EliminarRecetas;
+export default EliminarReceta;
