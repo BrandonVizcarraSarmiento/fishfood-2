@@ -34,7 +34,7 @@ const SeccionProductos = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl w-full">
           <div className="col-span-1 md:col-span-2 flex justify-center items-center h-full">
             {productosDestacados.length > 0 && (
-              <div className='h-full' onClick={() => handleProductoClick(productosDestacados[0].id)}>
+              <div className='h-full w-full' onClick={() => handleProductoClick(productosDestacados[0].id)}>
                 <Productos
                   nombre={productosDestacados[0].nombre}
                   precio={productosDestacados[0].precio}
